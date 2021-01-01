@@ -7,31 +7,38 @@ def returnEntry(arg=None):
     global is_up, previous_angle, simple_angle, image_x, image_y, direction
     global new_image_x, new_image_y, imagesprite
     result = entry.get()
-    choice = Choice(
-        result=result,
-        previous_angle=previous_angle,
-        simple_angle=simple_angle,
-        direction=direction,
-        imagesprite=imagesprite,
-        image_x=image_x,
-        image_y=image_y,
-        new_image_x=new_image_x,
-        new_image_y=new_image_y
-        )
-    if choice.command == 'turn':
-        label.config(text=result)
-        choice.turnCommand()
-        previous_angle = choice.previous_angle
-        simple_angle = choice.simple_angle
-        direction = choice.direction
-        imagesprite = choice.imagesprite
-    elif choice.command == 'move':
-        label.config(text=result)
-        choice.moveCommand()
-        image_x = choice.image_x
-        image_y = choice.image_y
-        new_image_x = choice.new_image_x
-        new_image_y = choice.new_image_y
+    if result == 'podnies':
+        is_up = True
+    elif result == 'opusc':
+        is_up = False
+    try:
+        choice = Choice(
+            result=result,
+            previous_angle=previous_angle,
+            simple_angle=simple_angle,
+            direction=direction,
+            imagesprite=imagesprite,
+            image_x=image_x,
+            image_y=image_y,
+            new_image_x=new_image_x,
+            new_image_y=new_image_y
+            )
+        if choice.command == 'turn':
+            label.config(text=result)
+            choice.turnCommand()
+            previous_angle = choice.previous_angle
+            simple_angle = choice.simple_angle
+            direction = choice.direction
+            imagesprite = choice.imagesprite
+        elif choice.command == 'move':
+            label.config(text=result)
+            choice.moveCommand()
+            image_x = choice.image_x
+            image_y = choice.image_y
+            new_image_x = choice.new_image_x
+            new_image_y = choice.new_image_y
+    except:
+        pass
     entry.delete(0, 'end')
 
 
@@ -160,19 +167,21 @@ class Choice:
             crossed_border = upperBorderCrossing(self)
         elif self.new_image_y > canvas_height:
             crossed_border = bottomBorderCrossing(self)
-        # elif new_image_x > canvas_width:
-        #     crossed_border = rightBorderCrossing(self)
-        # elif new_image_x < 0:
-        #     crossed_border = leftBorderCrossing(self)
+        elif self.new_image_x > canvas_width:
+            crossed_border = rightBorderCrossing(self)
+        elif self.new_image_x < 0:
+            crossed_border = leftBorderCrossing(self)
         else:
             crossed_border = self
-            canvas_for_image.move(imagesprite, self.move_x, self.move_y)
             self.drawIfNotUp(
                 self.image_x, self.image_y,
                 self.new_image_x, self.new_image_y
             )
         self.new_image_x = crossed_border.new_image_x
         self.new_image_y = crossed_border.new_image_y
+        self.move_x = self.new_image_x - self.image_x
+        self.move_y = self.new_image_y - self.image_y
+        canvas_for_image.move(self.imagesprite, self.move_x, self.move_y)
         self.image_x = self.new_image_x
         self.image_y = self.new_image_y
 
@@ -187,14 +196,11 @@ class upperBorderCrossing(Choice):
         self.simple_angle = choice.simple_angle
         self.imagesprite = choice.imagesprite
         self.passed_y = image_y
-        self.new_image_y = canvas_height + choice.move_y + self.passed_y
+        self.new_image_y = canvas_height + self.move_y + self.passed_y
         if simple_angle == 0 or simple_angle == 360:
             self.crossingAtRightAngle()
         else:
             self.crossingAtNotRightAngle()
-        self.move_x = self.new_image_x - self.image_x
-        self.move_y = self.new_image_y - self.image_y
-        canvas_for_image.move(self.imagesprite, self.move_x, self.move_y)
 
     def crossingAtRightAngle(self):
         super().drawIfNotUp(
@@ -204,6 +210,10 @@ class upperBorderCrossing(Choice):
         while self.new_image_y < 0:
             self.passed_y += canvas_height
             self.new_image_y = self.move_y + self.passed_y
+            super().drawIfNotUp(
+                self.image_x, 0,
+                self.new_image_x, canvas_height
+            )
         super().drawIfNotUp(
             self.image_x, canvas_height,
             self.new_image_x, self.new_image_y
@@ -236,7 +246,7 @@ class upperBorderCrossing(Choice):
             )
         self.new_image_x = top_x
         self.passed_y += canvas_height - self.new_image_y
-        self.passed_x += (canvas_height - self.new_image_y)/math.tan(radians)
+        self.passed_x += self.passed_y/math.tan(radians)
         if self.move_x > 0:
             top_x = self.image_x + self.passed_x
         else:
@@ -257,15 +267,12 @@ class bottomBorderCrossing(Choice):
         self.new_image_x = choice.new_image_x
         self.simple_angle = choice.simple_angle
         self.imagesprite = choice.imagesprite
-        self.passed_y = canvas_height - choice.image_y
-        self.new_image_y = choice.move_y - self.passed_y
+        self.passed_y = canvas_height - self.image_y
+        self.new_image_y = self.move_y - self.passed_y
         if simple_angle == 180:
             self.crossingAtRightAngle()
         else:
             self.crossingAtNotRightAngle()
-        self.move_x = self.new_image_x - self.image_x
-        self.move_y = self.new_image_y - self.image_y
-        canvas_for_image.move(self.imagesprite, self.move_x, self.move_y)
 
     def crossingAtRightAngle(self):
         super().drawIfNotUp(
@@ -275,6 +282,10 @@ class bottomBorderCrossing(Choice):
         while self.new_image_y > canvas_height:
             self.passed_y += canvas_height
             self.new_image_y = self.move_y - self.passed_y
+            super().drawIfNotUp(
+                self.image_x, 0,
+                self.new_image_x, canvas_height
+            )
         super().drawIfNotUp(
             self.image_x, 0,
             self.new_image_x, self.new_image_y
@@ -319,84 +330,148 @@ class bottomBorderCrossing(Choice):
         self.new_image_x, bot_x = bot_x, self.new_image_x
 
 
-def rightBorderCrossing(move_x, move_y):
-    passed_x = canvas_width - image_x
-    new_image_x = move_x - passed_x
-    while new_image_x > canvas_width:
-        passed_x += canvas_width
-        new_image_x = move_x - passed_x
-    move_x = image_x - new_image_x
-    if simple_angle[0] == 90:
-        canvas_for_image.move(imagesprite, move_x, move_y)
-        if is_up is False:
-            canvas_for_image.create_line(
-                image_x,
-                image_y,
-                canvas_width,
-                new_image_y)
-            canvas_for_image.create_line(
-                0,
-                new_image_y,
-                new_image_x,
-                new_image_y)
-    else:
-        passed_y = passed_x * math.tan(math.radians(simple_angle[0]))
-        right_y = image_y - passed_y if move_y > 0 else image_y + passed_y
-        canvas_for_image.move(imagesprite, -move_x, -move_y)
-        if is_up is False:
-            canvas_for_image.create_line(
-                image_x,
-                image_y,
-                canvas_width,
-                right_y
+class rightBorderCrossing(Choice):
+    def __init__(self, choice):
+        self.move_x = choice.move_x
+        self.move_y = choice.move_y
+        self.image_x = choice.image_x
+        self.image_y = choice.image_y
+        self.new_image_y = choice.new_image_y
+        self.simple_angle = choice.simple_angle
+        self.imagesprite = choice.imagesprite
+        self.passed_x = canvas_width - self.image_x
+        self.new_image_x = self.move_x - self.passed_x
+        if simple_angle == 90:
+            self.crossingAtRightAngle()
+        else:
+            self.crossingAtNotRightAngle()
+
+    def crossingAtRightAngle(self):
+        super().drawIfNotUp(
+            self.image_x, self.image_y,
+            canvas_width, self.new_image_y
+        )
+        while self.new_image_x > canvas_width:
+            self.passed_x += canvas_width
+            self.new_image_x = self.move_x - self.passed_x
+            super().drawIfNotUp(
+                0, self.image_y,
+                canvas_width, self.new_image_y
             )
-            canvas_for_image.create_line(
-                0,
-                right_y,
-                new_image_x,
-                new_image_y
+        super().drawIfNotUp(
+            0, self.image_y,
+            self.new_image_x, self.new_image_y
+        )
+
+    def crossingAtNotRightAngle(self):
+        radians = math.radians(self.simple_angle)
+        self.passed_y = self.passed_x*math.tan(radians)
+        if self.move_y > 0:
+            right_y = self.image_y + self.passed_y
+        else:
+            right_y = self.image_y - self.passed_y
+        self.new_image_y = right_y
+        super().drawIfNotUp(
+            self.image_x, self.image_y,
+            canvas_width, right_y
+        )
+        while self.new_image_x > canvas_width:
+            self.passed_x += canvas_width
+            self.new_image_x = self.move_x - self.passed_x
+            self.passed_y += canvas_width * math.tan(radians)
+            self.new_image_y = right_y
+            if self.move_y > 0:
+                right_y = self.image_y + self.passed_y
+            else:
+                right_y = self.image_y - self.passed_y
+            super().drawIfNotUp(
+                0, self.new_image_y,
+                canvas_width, right_y
             )
-    return (new_image_x, new_image_y)
+        self.new_image_y = right_y
+        self.passed_x += self.new_image_x
+        self.passed_y += self.new_image_x * math.tan(radians)
+        if self.move_y > 0:
+            right_y = self.image_y + self.passed_y
+        else:
+            right_y = self.image_y - self.passed_y
+        super().drawIfNotUp(
+            0, self.new_image_y,
+            self.new_image_x, right_y
+        )
+        self.new_image_y, right_y = right_y, self.new_image_y
 
 
-def leftBorderCrossing(move_x, move_y):
-    passed_x = image_x
-    new_image_x = canvas_width + move_x + passed_x
-    while new_image_x < 0:
-        passed_x += canvas_width
-        new_image_x = canvas_width + move_x + passed_x
-    move_x = new_image_x - image_x
-    if simple_angle[0] == 270:
-        canvas_for_image.move(imagesprite, move_x, move_y)
-        if is_up is False:
-            canvas_for_image.create_line(
-                image_x,
-                image_y,
-                0,
-                new_image_y)
-            canvas_for_image.create_line(
-                canvas_width,
-                new_image_y,
-                new_image_x,
-                new_image_y)
-    else:
-        passed_y = passed_x * math.tan(math.radians(simple_angle[0]))
-        left_y = image_y - passed_y if move_y > 0 else image_y - passed_y
-        canvas_for_image.move(imagesprite, move_x, -move_y)
-        if is_up is False:
-            canvas_for_image.create_line(
-                image_x,
-                image_y,
-                0,
-                left_y
+class leftBorderCrossing(Choice):
+    def __init__(self, choice):
+        self.move_x = choice.move_x
+        self.move_y = choice.move_y
+        self.image_x = choice.image_x
+        self.image_y = choice.image_y
+        self.new_image_y = choice.new_image_y
+        self.simple_angle = choice.simple_angle
+        self.imagesprite = choice.imagesprite
+        self.passed_x = self.image_x
+        self.new_image_x = canvas_height + self.move_x + self.passed_x
+        if simple_angle == 270:
+            self.crossingAtRightAngle()
+        else:
+            self.crossingAtNotRightAngle()
+
+    def crossingAtRightAngle(self):
+        super().drawIfNotUp(
+            self.image_x, self.image_y,
+            0, self.new_image_y
+        )
+        while self.new_image_x < 0:
+            self.passed_x += canvas_width
+            self.new_image_x = self.move_x + self.passed_x
+            super().drawIfNotUp(
+                canvas_width, self.image_y,
+                0, self.new_image_y
             )
-            canvas_for_image.create_line(
-                canvas_width,
-                left_y,
-                new_image_x,
-                new_image_y
+        super().drawIfNotUp(
+            canvas_width, self.image_y,
+            self.new_image_x, self.new_image_y
+        )
+
+    def crossingAtNotRightAngle(self):
+        radians = math.radians(self.simple_angle)
+        self.passed_y = self.passed_x * math.tan(radians)
+        if self.move_y > 0:
+            left_y = self.image_y + self.passed_y
+        else:
+            left_y = self.image_y - self.passed_y
+        self.new_image_y = left_y
+        super().drawIfNotUp(
+            self.image_x, self.image_y,
+            0, left_y
+        )
+        while self.new_image_x < 0:
+            self.passed_x += canvas_width
+            self.new_image_x = self.move_x + self.passed_x
+            self.passed_y += canvas_width * math.tan(radians)
+            self.new_image_y = left_y
+            if self.move_y > 0:
+                left_y = self.image_y + self.passed_y
+            else:
+                left_y = self.image_y - self.passed_y
+            super().drawIfNotUp(
+                canvas_width, self.new_image_y,
+                0, left_y
             )
-    return (new_image_x, new_image_y)
+            self.new_image_y = left_y
+            self.passed_x += canvas_width - self.new_image_x
+            self.passed_y += self.passed_x * math.tan(radians)
+            if self.move_y > 0:
+                left_y = self.image_y + self.passed_y
+            else:
+                left_y = self.image_y - self.passed_y
+            super().drawIfNotUp(
+                canvas_width, self.new_image_y,
+                self.new_image_x, left_y
+            )
+            self.new_image_y, left_y = left_y, self.new_image_y
 
 
 root = tk.Tk()
