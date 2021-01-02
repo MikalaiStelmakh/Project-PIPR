@@ -246,7 +246,7 @@ class upperBorderCrossing(Choice):
             )
         self.new_image_x = top_x
         self.passed_y += canvas_height - self.new_image_y
-        self.passed_x += self.passed_y/math.tan(radians)
+        self.passed_x += canvas_height - self.new_image_y/math.tan(radians)
         if self.move_x > 0:
             top_x = self.image_x + self.passed_x
         else:
@@ -412,7 +412,7 @@ class leftBorderCrossing(Choice):
         self.simple_angle = choice.simple_angle
         self.imagesprite = choice.imagesprite
         self.passed_x = self.image_x
-        self.new_image_x = canvas_height + self.move_x + self.passed_x
+        self.new_image_x = canvas_width + self.move_x + self.passed_x
         if simple_angle == 270:
             self.crossingAtRightAngle()
         else:
@@ -460,18 +460,18 @@ class leftBorderCrossing(Choice):
                 canvas_width, self.new_image_y,
                 0, left_y
             )
-            self.new_image_y = left_y
-            self.passed_x += canvas_width - self.new_image_x
-            self.passed_y += self.passed_x * math.tan(radians)
-            if self.move_y > 0:
-                left_y = self.image_y + self.passed_y
-            else:
-                left_y = self.image_y - self.passed_y
-            super().drawIfNotUp(
-                canvas_width, self.new_image_y,
-                self.new_image_x, left_y
-            )
-            self.new_image_y, left_y = left_y, self.new_image_y
+        self.new_image_y = left_y
+        self.passed_x += canvas_width - self.new_image_x
+        self.passed_y += (canvas_width - self.new_image_x) * math.tan(radians)
+        if self.move_y > 0:
+            left_y = self.image_y + self.passed_y
+        else:
+            left_y = self.image_y - self.passed_y
+        super().drawIfNotUp(
+            canvas_width, self.new_image_y,
+            self.new_image_x, left_y
+        )
+        self.new_image_y, left_y = left_y, self.new_image_y
 
 
 root = tk.Tk()
