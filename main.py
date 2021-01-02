@@ -64,23 +64,38 @@ class UI(tk.Frame):
             self.is_up = True
         elif self.result == 'opusc':
             self.is_up = False
-
-        choice = Choice(self)
-        if choice.command == 'turn':
-            self.label.config(text=self.result)
-            choice.turnCommand()
-            self.previous_angle = choice.previous_angle
-            self.simple_angle = choice.simple_angle
-            self.direction = choice.direction
-            self.imagesprite = choice.imagesprite
-        elif choice.command == 'move':
-            self.label.config(text=self.result)
-            choice.moveCommand()
-            self.image_x = choice.image_x
-            self.image_y = choice.image_y
-            self.new_image_x = choice.new_image_x
-            self.new_image_y = choice.new_image_y
-
+        try:
+            choice = Choice(self)
+            if choice.command == 'obrot':
+                text = self.result
+                choice.turnCommand()
+                self.previous_angle = choice.previous_angle
+                self.simple_angle = choice.simple_angle
+                self.direction = choice.direction
+                self.imagesprite = choice.imagesprite
+            elif choice.command == 'naprzod':
+                text = self.result
+                choice.moveCommand()
+                self.image_x = choice.image_x
+                self.image_y = choice.image_y
+                self.new_image_x = choice.new_image_x
+                self.new_image_y = choice.new_image_y
+            elif choice.command == 'podnies' or choice.command == 'opusc':
+                text = ('ValueError\n'
+                        'Example of a correct entry: podnies')
+            else:
+                text = (f'Undefined command: {self.result}\n'
+                        'Example of a correct entry: obrot 90')
+        except IndexError:
+            if self.result == 'podnies' or self.result == 'opusc':
+                text = self.result
+            else:
+                text = (f'Undefined command: {self.result}\n'
+                        'Example of a correct entry: obrot 90')
+        except ValueError:
+            text = ('ValueError\n'
+                    'Example of a correct entry: move 100')
+        self.label.config(text=text)
         self.entry.delete(0, 'end')
 
 
