@@ -6,14 +6,22 @@ from logomocja_borders_crossing import (
 )
 
 
-class Turn:
+class Choice:
     def __init__(self, main):
+        self.simple_angle = main.simple_angle
         self.direction = main.direction
-        self.image = main.image
-        self.canvas_for_image = main.canvas_for_image
-        self.imagesprite = main.imagesprite
         self.image_x = main.image_x
         self.image_y = main.image_y
+        self.canvas_for_image = main.canvas_for_image
+        self.canvas_width = main.canvas_width
+        self.canvas_height = main.canvas_height
+        self.imagesprite = main.imagesprite
+
+
+class Turn(Choice):
+    def __init__(self, main):
+        super().__init__(main)
+        self.image = main.image
         self.image_width = main.image_width
         self.image_height = main.image_height
         self.previous_angle = main.previous_angle
@@ -90,18 +98,10 @@ class Turn:
         return imagesprite
 
 
-class Move:
+class Move(Choice):
     def __init__(self, main):
-        self.main = main
+        super().__init__(main)
         self.units = main.units
-        self.simple_angle = main.simple_angle
-        self.direction = main.direction
-        self.image_x = main.image_x
-        self.image_y = main.image_y
-        self.canvas_for_image = main.canvas_for_image
-        self.canvas_width = main.canvas_width
-        self.canvas_height = main.canvas_height
-        self.imagesprite = main.imagesprite
         self.is_up = main.is_up
 
     def moveValue(self):
