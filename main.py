@@ -1,12 +1,6 @@
 from PIL import Image, ImageTk
 import tkinter as tk
-from logomocja_choice import Turn, Move
-
-
-"""
-TODO:
-1) Split main function into class functions,
-"""
+from InputProcessing import InputProcessing
 
 
 class UI(tk.Frame):
@@ -66,77 +60,7 @@ class UI(tk.Frame):
 
     def main(self, event):
         self.result = self.entry.get()
-        self.chooseCommand()
-
-    def splitInput(self, message):
-        splitted_message = message.split()
-        self.command = splitted_message[0]
-        self.units = float(splitted_message[1])
-
-    def valueErrorText(self):
-        self.text = (
-            'ValueError\n'
-            'Example of a correct entry: naprzod 100'
-            )
-
-    def undefinedCommandText(self):
-        self.text = (
-            f'Undefined command: {self.result}\n'
-            'Example of a correct entry: obrot 90'
-            )
-
-    def indexErrorText(self):
-        if self.result == 'podnies' or self.result == 'opusc':
-            self.text = self.result
-        else:
-            self.text = (
-                f'Undefined command: {self.result}\n'
-                'Example of a correct entry: obrot 90'
-                )
-
-    def chooseCommand(self):
-        if self.result == 'podnies':
-            self.is_up = True
-        elif self.result == 'opusc':
-            self.is_up = False
-        try:
-            self.splitInput(self.result)
-            if self.command == 'obrot':
-                self.text = self.result
-                self.turnCommand()
-            elif self.command == 'naprzod':
-                self.text = self.result
-                self.moveCommand()
-            elif self.command == 'podnies' or self.command == 'opusc':
-                self.valueErrorText()
-            else:
-                self.undefinedCommandText()
-        except IndexError:
-            self.indexErrorText()
-        except ValueError:
-            self.valueErrorText()
-        self.returnEntry()
-
-    def returnEntry(self):
-        self.label.config(text=self.text)
-        self.entry.delete(0, 'end')
-
-    def turnCommand(self):
-        turn = Turn(self)
-        self.previous_angle = turn.angle
-        self.simple_angle = turn.simplifyAngle()
-        self.direction = turn.direction
-        self.anchor = turn.setImageAnchor()
-        turn.setRotateValue(self.units)
-        turn.setResizeValue()
-        self.canvas_for_image.image = turn.createImage()
-        self.imagesprite = turn.drawImage()
-
-    def moveCommand(self):
-        move = Move(self)
-        self.image_x, self.image_y = move.setNewCoordinates()
-        move.moveImage()
-        move.drawLine()
+        InputProcessing(self)
 
 
 root = tk.Tk()
