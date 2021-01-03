@@ -1,13 +1,11 @@
 from PIL import Image, ImageTk
 import tkinter as tk
-from logomocja_choice import Choice, Turn
+from logomocja_choice import Turn, Move
 
 
 """
 TODO:
 1) Split main function into class functions,
-2) In logomocja_choice split choice's turnCommand function into new class functions
-3) In logomocja_choice split choice's moveCommand function into new class functions
 """
 
 
@@ -68,40 +66,59 @@ class UI(tk.Frame):
 
     def main(self, event):
         self.result = self.entry.get()
+        self.chooseCommand()
+
+    def splitInput(self, message):
+        splitted_message = message.split()
+        self.command = splitted_message[0]
+        self.units = float(splitted_message[1])
+
+    def valueErrorText(self):
+        self.text = (
+            'ValueError\n'
+            'Example of a correct entry: naprzod 100'
+            )
+
+    def undefinedCommandText(self):
+        self.text = (
+            f'Undefined command: {self.result}\n'
+            'Example of a correct entry: obrot 90'
+            )
+
+    def indexErrorText(self):
+        if self.result == 'podnies' or self.result == 'opusc':
+            self.text = self.result
+        else:
+            self.text = (
+                f'Undefined command: {self.result}\n'
+                'Example of a correct entry: obrot 90'
+                )
+
+    def chooseCommand(self):
         if self.result == 'podnies':
             self.is_up = True
         elif self.result == 'opusc':
             self.is_up = False
         try:
-            choice = Choice(self)
-            self.command = choice.command
-            self.units = choice.units
+            self.splitInput(self.result)
             if self.command == 'obrot':
-                text = self.result
+                self.text = self.result
                 self.turnCommand()
             elif self.command == 'naprzod':
-                text = self.result
-                choice.moveCommand()
-                self.image_x = choice.image_x
-                self.image_y = choice.image_y
-                self.new_image_x = choice.new_image_x
-                self.new_image_y = choice.new_image_y
-            elif choice.command == 'podnies' or choice.command == 'opusc':
-                text = ('ValueError\n'
-                        'Example of a correct entry: podnies')
+                self.text = self.result
+                self.moveCommand()
+            elif self.command == 'podnies' or self.command == 'opusc':
+                self.valueErrorText()
             else:
-                text = (f'Undefined command: {self.result}\n'
-                        'Example of a correct entry: obrot 90')
+                self.undefinedCommandText()
         except IndexError:
-            if self.result == 'podnies' or self.result == 'opusc':
-                text = self.result
-            else:
-                text = (f'Undefined command: {self.result}\n'
-                        'Example of a correct entry: obrot 90')
+            self.indexErrorText()
         except ValueError:
-            text = ('ValueError\n'
-                    'Example of a correct entry: move 100')
-        self.label.config(text=text)
+            self.valueErrorText()
+        self.returnEntry()
+
+    def returnEntry(self):
+        self.label.config(text=self.text)
         self.entry.delete(0, 'end')
 
     def turnCommand(self):
@@ -114,6 +131,12 @@ class UI(tk.Frame):
         turn.setResizeValue()
         self.canvas_for_image.image = turn.createImage()
         self.imagesprite = turn.drawImage()
+
+    def moveCommand(self):
+        move = Move(self)
+        self.image_x, self.image_y = move.setNewCoordinates()
+        move.moveImage()
+        move.drawLine()
 
 
 root = tk.Tk()
