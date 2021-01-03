@@ -36,29 +36,6 @@ class Choice:
                 x0, y0,
                 x, y)
 
-    def simplifyAngle(self, angle):
-        if angle == 0 or angle == 360:
-            self.direction = 'N'
-        elif angle == 90:
-            self.direction = 'E'
-        elif angle == 180:
-            self.direction = 'S'
-        elif angle == 270:
-            self.direction = 'W'
-        elif angle < 90:
-            angle = 90 - angle
-            self.direction = 'NE'
-        elif angle < 180:
-            angle = 90 - (180 - angle)
-            self.direction = 'SE'
-        elif angle < 270:
-            angle = 270 - angle
-            self.direction = 'SW'
-        elif angle < 360:
-            angle = 90 - (360 - angle)
-            self.direction = 'NW'
-        return angle
-
     def moveValue(self):
         x = self.units * math.cos(math.radians(self.simple_angle))
         y = self.units * math.sin(math.radians(self.simple_angle))
@@ -78,44 +55,6 @@ class Choice:
         elif self.direction == 'NE':
             y = -y
         return (float(x), float(y))
-
-    def turnCommand(self):
-        angle = self.units
-        while angle/360 > 1:
-            angle -= 360
-        image_rotate = -(angle + self.previous_angle)
-        image_resize = (self.image_height, self.image_width)
-        self.canvas_for_image.image = ImageTk.PhotoImage(
-            self.image.rotate(image_rotate).resize(image_resize),
-            Image.ANTIALIAS)
-        self.previous_angle += angle
-        angle = self.previous_angle
-        while angle < 0:
-            angle += 360
-        while angle > 360:
-            angle -= 360
-        self.simple_angle = self.simplifyAngle(angle)
-        if angle == 90:
-            anchor = 'w'
-        elif angle == 180:
-            anchor = 'n'
-        elif angle == 270:
-            anchor = 'e'
-        elif angle == 0 or angle == 360:
-            anchor = 's'
-        elif angle < 90:
-            anchor = 'sw'
-        elif angle < 180:
-            anchor = 'nw'
-        elif angle < 270:
-            anchor = 'ne'
-        elif angle < 360:
-            anchor = 'se'
-        self.imagesprite = self.canvas_for_image.create_image(
-            self.image_x,
-            self.image_y,
-            anchor=anchor,
-            image=self.canvas_for_image.image)
 
     def moveCommand(self):
         self.move_x = self.moveValue()[0]
@@ -143,3 +82,87 @@ class Choice:
         self.canvas_for_image.move(self.imagesprite, self.move_x, self.move_y)
         self.image_x = self.new_image_x
         self.image_y = self.new_image_y
+
+
+class Turn:
+    def __init__(self, main):
+        self.direction = main.direction
+        self.image = main.image
+        self.canvas_for_image = main.canvas_for_image
+        self.imagesprite = main.imagesprite
+        self.image_x = main.image_x
+        self.image_y = main.image_y
+        self.image_width = main.image_width
+        self.image_height = main.image_height
+        self.previous_angle = main.previous_angle
+        self.angle = main.units + self.previous_angle
+        while self.angle > 360:
+            self.angle -= 360
+        while self.angle < 0:
+            self.angle += 360
+
+    def simplifyAngle(self):
+        if self.angle == 0 or self.angle == 360:
+            self.direction = 'N'
+        elif self.angle == 90:
+            self.direction = 'E'
+        elif self.angle == 180:
+            self.direction = 'S'
+        elif self.angle == 270:
+            self.direction = 'W'
+        elif self.angle < 90:
+            self.angle = 90 - self.angle
+            self.direction = 'NE'
+        elif self.angle < 180:
+            self.angle = 90 - (180 - self.angle)
+            self.direction = 'SE'
+        elif self.angle < 270:
+            self.angle = 270 - self.angle
+            self.direction = 'SW'
+        elif self.angle < 360:
+            self.angle = 90 - (360 - self.angle)
+            self.direction = 'NW'
+        return self.angle
+
+    def setImageAnchor(self):
+        if self.direction == 'E':
+            self.anchor = 'w'
+        elif self.direction == 'S':
+            self.anchor = 'n'
+        elif self.direction == 'W':
+            self.anchor = 'e'
+        elif self.direction == 'N':
+            self.anchor = 's'
+        elif self.direction == 'NE':
+            self.anchor = 'sw'
+        elif self.direction == 'SE':
+            self.anchor = 'nw'
+        elif self.direction == 'SW':
+            self.anchor = 'ne'
+        elif self.direction == 'NW':
+            self.anchor = 'se'
+        return self.anchor
+
+    def setRotateValue(self, angle):
+        self.rotate_value = -(angle + self.previous_angle)
+
+    def setResizeValue(self):
+        self.resize_value = (self.image_height, self.image_width)
+
+    def createImage(self):
+        rotate_value = self.rotate_value
+        resize_value = self.resize_value
+        self.canvas_for_image.image = ImageTk.PhotoImage(
+            self.image.rotate(rotate_value).resize(resize_value),
+            Image.ANTIALIAS
+            )
+        return self.canvas_for_image.image
+
+    def drawImage(self):
+        imagesprite = self.canvas_for_image.create_image(
+            self.image_x,
+            self.image_y,
+            anchor=self.anchor,
+            image=self.canvas_for_image.image
+            )
+        return imagesprite

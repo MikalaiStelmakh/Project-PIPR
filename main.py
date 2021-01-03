@@ -1,6 +1,14 @@
 from PIL import Image, ImageTk
 import tkinter as tk
-from logomocja_choice import Choice
+from logomocja_choice import Choice, Turn
+
+
+"""
+TODO:
+1) Split main function into class functions,
+2) In logomocja_choice split choice's turnCommand function into new class functions
+3) In logomocja_choice split choice's moveCommand function into new class functions
+"""
 
 
 class UI(tk.Frame):
@@ -13,8 +21,8 @@ class UI(tk.Frame):
         self.canvas_for_image.place(
             relx=0.5,
             rely=0.5,
-            width=640,
-            height=490,
+            width=700,
+            height=525,
             anchor='center')
         self.canvas_for_image.update()
         self.canvas_width = self.canvas_for_image.winfo_width()
@@ -66,14 +74,12 @@ class UI(tk.Frame):
             self.is_up = False
         try:
             choice = Choice(self)
-            if choice.command == 'obrot':
+            self.command = choice.command
+            self.units = choice.units
+            if self.command == 'obrot':
                 text = self.result
-                choice.turnCommand()
-                self.previous_angle = choice.previous_angle
-                self.simple_angle = choice.simple_angle
-                self.direction = choice.direction
-                self.imagesprite = choice.imagesprite
-            elif choice.command == 'naprzod':
+                self.turnCommand()
+            elif self.command == 'naprzod':
                 text = self.result
                 choice.moveCommand()
                 self.image_x = choice.image_x
@@ -97,6 +103,17 @@ class UI(tk.Frame):
                     'Example of a correct entry: move 100')
         self.label.config(text=text)
         self.entry.delete(0, 'end')
+
+    def turnCommand(self):
+        turn = Turn(self)
+        self.previous_angle = turn.angle
+        self.simple_angle = turn.simplifyAngle()
+        self.direction = turn.direction
+        self.anchor = turn.setImageAnchor()
+        turn.setRotateValue(self.units)
+        turn.setResizeValue()
+        self.canvas_for_image.image = turn.createImage()
+        self.imagesprite = turn.drawImage()
 
 
 root = tk.Tk()
