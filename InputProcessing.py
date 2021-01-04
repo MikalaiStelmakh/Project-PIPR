@@ -3,74 +3,75 @@ from logomocja_choice import Turn, Move
 
 class InputProcessing:
     def __init__(self, master):
-        self.chooseCommand(master)
+        self.master = master
+        self.chooseCommand()
 
-    def splitInput(self, master, message):
+    def splitInput(self, message):
         splitted_message = message.split()
-        master.command = splitted_message[0]
-        master.units = float(splitted_message[1])
+        self.master.command = splitted_message[0]
+        self.master.units = float(splitted_message[1])
 
-    def valueErrorText(self, master):
-        master.text = (
+    def valueErrorText(self):
+        self.master.text = (
             'ValueError\n'
             'Example of a correct entry: naprzod 100'
             )
 
-    def undefinedCommandText(self, master):
-        master.text = (
-            f'Undefined command: {master.result}\n'
+    def undefinedCommandText(self):
+        self.master.text = (
+            f'Undefined command: {self.master.result}\n'
             'Example of a correct entry: obrot 90'
             )
 
-    def indexErrorText(self, master):
-        if master.result == 'podnies' or master.result == 'opusc':
-            master.text = master.result
+    def indexErrorText(self):
+        if self.master.result == 'podnies' or self.master.result == 'opusc':
+            self.master.text = self.master.result
         else:
-            master.text = (
-                f'Undefined command: {master.result}\n'
+            self.master.text = (
+                f'Undefined command: {self.master.result}\n'
                 'Example of a correct entry: obrot 90'
                 )
 
-    def chooseCommand(self, master):
-        if master.result == 'podnies':
-            master.is_up = True
-        elif master.result == 'opusc':
-            master.is_up = False
+    def chooseCommand(self):
+        if self.master.result == 'podnies':
+            self.master.is_up = True
+        elif self.master.result == 'opusc':
+            self.master.is_up = False
         try:
-            self.splitInput(master, master.result)
-            if master.command == 'obrot':
-                master.text = master.result
-                self.turnCommand(master)
-            elif master.command == 'naprzod':
-                master.text = master.result
-                self.moveCommand(master)
-            elif master.command == 'podnies' or master.command == 'opusc':
-                self.valueErrorText(master)
+            self.splitInput(self.master.result)
+            if self.master.command == 'obrot':
+                self.master.text = self.master.result
+                self.turnCommand()
+            elif self.master.command == 'naprzod':
+                self.master.text = self.master.result
+                self.moveCommand()
+            elif self.master.command == 'podnies' or self.master.command == 'opusc':
+                self.valueErrorText()
             else:
-                self.undefinedCommandText(master)
+                self.undefinedCommandText()
         except IndexError:
-            self.indexErrorText(master)
+            self.indexErrorText()
         except ValueError:
-            self.valueErrorText(master)
-        self.returnEntry(master)
+            self.valueErrorText()
+        self.returnEntry()
 
-    def returnEntry(self, master):
-        master.label.config(text=master.text)
-        master.entry.delete(0, 'end')
+    def returnEntry(self):
+        self.master.label.config(text=self.master.text)
+        self.master.entry.delete(0, 'end')
 
-    def turnCommand(self, master):
-        turn = Turn(master)
-        master.previous_angle = turn.angle
-        master.simple_angle = turn.simplifyAngle()
-        master.direction = turn.direction
-        master.anchor = turn.setImageAnchor()
-        turn.setRotateValue(master.units)
+    def turnCommand(self):
+        turn = Turn(self.master)
+        self.master.previous_angle = turn.angle
+        self.master.simple_angle = turn.simplifyAngle()
+        self.master.direction = turn.direction
+        self.master.anchor = turn.setImageAnchor()
+        turn.setRotateValue(self.master.units)
         turn.setResizeValue()
-        master.canvas_for_image.image = turn.createImage()
-        master.imagesprite = turn.drawImage()
+        self.master.canvas_for_image.image = turn.createImage()
+        self.master.imagesprite = turn.drawImage()
 
-    def moveCommand(self, master):
-        move = Move(master)
-        master.image_x, master.image_y = move.setNewCoordinates()
+    def moveCommand(self):
+        move = Move(self.master)
+        self.master.image_x, self.master.image_y = move.setNewCoordinates()
         move.moveImage()
         move.drawLine()
