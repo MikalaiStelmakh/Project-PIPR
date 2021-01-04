@@ -8,6 +8,7 @@ from logomocja_borders_crossing import (
 
 class Choice:
     def __init__(self, main):
+        self.main = main
         self.simple_angle = main.simple_angle
         self.direction = main.direction
         self.image_x = main.image_x
@@ -151,13 +152,13 @@ class Move(Choice):
 
     def borderCrossed(self):
         if self.new_image_y < 0:
-            crossed_border = upperBorderCrossing(self)
+            crossed_border = upperBorderCrossing(self, self.main)
         elif self.new_image_y > self.canvas_height:
-            crossed_border = bottomBorderCrossing(self)
+            crossed_border = bottomBorderCrossing(self, self.main)
         elif self.new_image_x > self.canvas_width:
-            crossed_border = rightBorderCrossing(self)
+            crossed_border = rightBorderCrossing(self, self.main)
         elif self.new_image_x < 0:
-            crossed_border = leftBorderCrossing(self)
+            crossed_border = leftBorderCrossing(self, self.main)
         return crossed_border
 
     def drawLine(self):
@@ -166,4 +167,8 @@ class Move(Choice):
                 self.canvas_for_image.create_line(
                     self.image_x, self.image_y,
                     self.new_image_x, self.new_image_y
+                )
+                self.main.draw.line(
+                    [self.image_x, self.image_y,
+                     self.new_image_x, self.new_image_y], fill='black'
                 )
