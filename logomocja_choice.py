@@ -6,27 +6,10 @@ from logomocja_borders_crossing import (
 )
 
 
-class Choice:
-    def __init__(self, main):
-        self.main = main
-        self.simple_angle = main.simple_angle
-        self.direction = main.direction
-        self.image_x = main.image_x
-        self.image_y = main.image_y
-        self.canvas_for_image = main.canvas_for_image
-        self.canvas_width = main.canvas_width
-        self.canvas_height = main.canvas_height
-        self.imagesprite = main.imagesprite
-
-
-class Turn(Choice):
-    def __init__(self, main):
-        super().__init__(main)
-        self.image = main.image
-        self.image_width = main.image_width
-        self.image_height = main.image_height
-        self.previous_angle = main.previous_angle
-        self.angle = main.units + self.previous_angle
+class Turn:
+    def __init__(self, ui):
+        self.ui = ui
+        self.angle = self.ui.units + self.ui.previous_angle
         while self.angle > 360:
             self.angle -= 360
         while self.angle < 0:
@@ -53,7 +36,7 @@ class Turn(Choice):
         elif self.angle < 360:
             self.angle = 90 - (360 - self.angle)
             self.direction = 'NW'
-        return self.angle
+        self.ui.simple_angle = self.angle
 
     def setImageAnchor(self):
         if self.direction == 'E':
@@ -72,103 +55,104 @@ class Turn(Choice):
             self.anchor = 'ne'
         elif self.direction == 'NW':
             self.anchor = 'se'
-        return self.anchor
+        self.ui.direction = self.direction
+        self.ui.anchor = self.anchor
 
     def setRotateValue(self, angle):
-        self.rotate_value = -(angle + self.previous_angle)
+        rotate_value = -(angle + self.ui.previous_angle)
+        self.ui.previous_angle = -rotate_value
+        return rotate_value
 
     def setResizeValue(self):
-        self.resize_value = (self.image_height, self.image_width)
+        resize_value = (self.ui.image_height, self.ui.image_width)
+        return resize_value
 
     def createImage(self):
-        rotate_value = self.rotate_value
-        resize_value = self.resize_value
-        self.canvas_for_image.image = ImageTk.PhotoImage(
-            self.image.rotate(rotate_value).resize(resize_value),
+        rotate_value = self.setRotateValue(self.ui.units)
+        resize_value = self.setResizeValue()
+        self.ui.canvas_for_image.image = ImageTk.PhotoImage(
+            self.ui.image.rotate(rotate_value).resize(resize_value),
             Image.ANTIALIAS
             )
-        return self.canvas_for_image.image
 
     def drawImage(self):
-        imagesprite = self.canvas_for_image.create_image(
-            self.image_x,
-            self.image_y,
+        self.ui.imagesprite = self.ui.canvas_for_image.create_image(
+            self.ui.image_x,
+            self.ui.image_y,
             anchor=self.anchor,
-            image=self.canvas_for_image.image
+            image=self.ui.canvas_for_image.image
             )
-        return imagesprite
 
 
-class Move(Choice):
-    def __init__(self, main):
-        super().__init__(main)
-        self.units = main.units
-        self.is_up = main.is_up
+class Move:
+    def __init__(self, ui):
+        self.ui = ui
 
     def moveValue(self):
-        x = self.units * math.cos(math.radians(self.simple_angle))
-        y = self.units * math.sin(math.radians(self.simple_angle))
-        if self.direction == 'N':
-            x, y = (0, -self.units)
-        elif self.direction == 'E':
-            x, y = (self.units, 0)
-        elif self.direction == 'S':
-            x, y = (0, self.units)
-        elif self.direction == 'W':
-            x, y = (-self.units, 0)
-        if self.direction == 'SW':
+        units = self.ui.units
+        direction = self.ui.direction
+        x = units * math.cos(math.radians(self.ui.simple_angle))
+        y = units * math.sin(math.radians(self.ui.simple_angle))
+        if direction == 'N':
+            x, y = (0, -units)
+        elif direction == 'E':
+            x, y = (units, 0)
+        elif direction == 'S':
+            x, y = (0, units)
+        elif direction == 'W':
+            x, y = (-units, 0)
+        if direction == 'SW':
             x = -x
-        elif self.direction == 'NW':
+        elif direction == 'NW':
             x = -x
             y = -y
-        elif self.direction == 'NE':
+        elif direction == 'NE':
             y = -y
         return x, y
 
     def setNewCoordinates(self):
         self.move_x, self.move_y = self.moveValue()
-        self.new_image_x = self.image_x + self.move_x
-        self.new_image_y = self.image_y + self.move_y
+        self.new_image_x = self.ui.image_x + self.move_x
+        self.new_image_y = self.ui.image_y + self.move_y
         if self.isBorderCrossed() is True:
             crossed_border = self.borderCrossed()
             self.new_image_x = crossed_border.new_image_x
             self.new_image_y = crossed_border.new_image_y
-        return self.new_image_x, self.new_image_y
 
     def isBorderCrossed(self):
         self.isBorderCrossed = (
             self.new_image_x < 0 or
-            self.new_image_y > self.canvas_height or
-            self.new_image_x > self.canvas_width or
+            self.new_image_y > self.ui.canvas_height or
+            self.new_image_x > self.ui.canvas_width or
             self.new_image_y < 0
             )
         return self.isBorderCrossed
 
-    def moveImage(self):
-        if self.isBorderCrossed is True:
-            self.move_x = self.new_image_x - self.image_x
-            self.move_y = self.new_image_y - self.image_y
-        self.canvas_for_image.move(self.imagesprite, self.move_x, self.move_y)
-
     def borderCrossed(self):
         if self.new_image_y < 0:
-            crossed_border = upperBorderCrossing(self, self.main)
-        elif self.new_image_y > self.canvas_height:
-            crossed_border = bottomBorderCrossing(self, self.main)
-        elif self.new_image_x > self.canvas_width:
-            crossed_border = rightBorderCrossing(self, self.main)
+            crossed_border = upperBorderCrossing(self, self.ui)
+        elif self.new_image_y > self.ui.canvas_height:
+            crossed_border = bottomBorderCrossing(self, self.ui)
+        elif self.new_image_x > self.ui.canvas_width:
+            crossed_border = rightBorderCrossing(self, self.ui)
         elif self.new_image_x < 0:
-            crossed_border = leftBorderCrossing(self, self.main)
+            crossed_border = leftBorderCrossing(self, self.ui)
         return crossed_border
+
+    def moveImage(self):
+        if self.isBorderCrossed is True:
+            self.move_x = self.new_image_x - self.ui.image_x
+            self.move_y = self.new_image_y - self.ui.image_y
+        self.ui.canvas_for_image.move(self.ui.imagesprite, self.move_x, self.move_y)
 
     def drawLine(self):
         if self.isBorderCrossed is False:
-            if self.is_up is False:
-                self.canvas_for_image.create_line(
-                    self.image_x, self.image_y,
+            if self.ui.is_up is False:
+                self.ui.canvas_for_image.create_line(
+                    self.ui.image_x, self.ui.image_y,
                     self.new_image_x, self.new_image_y
                 )
-                self.main.draw.line(
-                    [self.image_x, self.image_y,
+                self.ui.draw.line(
+                    [self.ui.image_x, self.ui.image_y,
                      self.new_image_x, self.new_image_y], fill='black'
                 )

@@ -2,17 +2,18 @@ import math
 
 
 class borderCrossing:
-    def __init__(self, choice):
+    def __init__(self, choice, ui):
+        self.ui = ui
         self.move_x = choice.move_x
         self.move_y = choice.move_y
-        self.image_x = choice.image_x
-        self.image_y = choice.image_y
-        self.simple_angle = choice.simple_angle
-        self.imagesprite = choice.imagesprite
-        self.canvas_for_image = choice.canvas_for_image
-        self.canvas_height = choice.canvas_height
-        self.canvas_width = choice.canvas_width
-        self.is_up = choice.is_up
+        self.image_x = ui.image_x
+        self.image_y = ui.image_y
+        self.simple_angle = ui.simple_angle
+        self.imagesprite = ui.imagesprite
+        self.canvas_for_image = ui.canvas_for_image
+        self.canvas_height = ui.canvas_height
+        self.canvas_width = ui.canvas_width
+        self.is_up = ui.is_up
         self.tangens = math.tan(math.radians(self.simple_angle))
 
     def drawIfNotUp(self, x0, y0, x, y):
@@ -20,11 +21,14 @@ class borderCrossing:
             self.canvas_for_image.create_line(
                 x0, y0,
                 x, y)
+            self.ui.draw.line(
+                [x0, y0, x, y],
+                fill='black')
 
 
 class upperBorderCrossing(borderCrossing):
-    def __init__(self, choice):
-        super().__init__(choice)
+    def __init__(self, choice, ui):
+        super().__init__(choice, ui)
         self.new_image_x = choice.new_image_x
         self.passed_y = self.image_y
         self.new_image_y = self.canvas_height + self.move_y + self.passed_y
@@ -89,8 +93,8 @@ class upperBorderCrossing(borderCrossing):
 
 
 class bottomBorderCrossing(borderCrossing):
-    def __init__(self, choice):
-        super().__init__(choice)
+    def __init__(self, choice, ui):
+        super().__init__(choice, ui)
         self.new_image_x = choice.new_image_x
         self.passed_y = self.canvas_height - self.image_y
         self.new_image_y = self.move_y - self.passed_y
@@ -155,8 +159,8 @@ class bottomBorderCrossing(borderCrossing):
 
 
 class rightBorderCrossing(borderCrossing):
-    def __init__(self, choice):
-        super().__init__(choice)
+    def __init__(self, choice, ui):
+        super().__init__(choice, ui)
         self.new_image_y = choice.new_image_y
         self.passed_x = self.canvas_width - self.image_x
         self.new_image_x = self.move_x - self.passed_x
@@ -221,8 +225,8 @@ class rightBorderCrossing(borderCrossing):
 
 
 class leftBorderCrossing(borderCrossing):
-    def __init__(self, choice):
-        super().__init__(choice)
+    def __init__(self, choice, ui):
+        super().__init__(choice, ui)
         self.new_image_y = choice.new_image_y
         self.passed_x = self.image_x
         self.new_image_x = self.canvas_width + self.move_x + self.passed_x
