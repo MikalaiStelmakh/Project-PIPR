@@ -1,6 +1,8 @@
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageDraw
 import tkinter as tk
+from tkinter import filedialog
 from InputProcessing import InputProcessing
+from menu import Menu
 
 
 class UI(tk.Frame):
@@ -8,6 +10,8 @@ class UI(tk.Frame):
         self.master = master
         self.canvas = tk.Canvas(master, height=700, width=800)
         self.canvas.pack()
+
+        self.createMenu(self.master)
 
         self.canvas_for_image = tk.Canvas(master, bg='white')
         self.canvas_for_image.place(
@@ -22,8 +26,10 @@ class UI(tk.Frame):
 
         self.image_width = int(self.canvas_width*0.05)
         self.image_height = int(self.canvas_height*0.05)
-        self.image_x = self.canvas_width*0.5
-        self.image_y = self.canvas_height*0.5 + self.image_height/2
+
+        self.image = Image.open('turtle.png')
+
+        self.initialOptions()
 
         self.label_frame = tk.Frame(master, borderwidth=2, relief="sunken")
         self.label_frame.place(rely=0.9, relwidth=1, relheight=0.07)
@@ -39,16 +45,17 @@ class UI(tk.Frame):
         self.entry_frame = tk.Frame(master)
         self.entry_frame.place(rely=0.97, relwidth=1, relheight=0.03)
         self.entry = tk.Entry(self.entry_frame, bg='white', fg='black')
-        self.x = 0
-        self.simple_angle = 0
-        self.direction = 'N'
-        self.previous_angle = 0
-        self.is_up = False
         self.new_image_x, self.new_image_y = self.image_x, self.image_y
         self.entry.bind("<Return>", self.main)
         self.entry.place(relwidth=1)
 
-        self.image = Image.open('turtle.png')
+    def initialOptions(self):
+        self.image_x = self.canvas_width*0.5
+        self.image_y = self.canvas_height*0.5 + self.image_height/2
+        self.simple_angle = 0
+        self.direction = 'N'
+        self.previous_angle = 0
+        self.is_up = False
         self.canvas_for_image.image = ImageTk.PhotoImage(
             self.image.resize((self.image_height, self.image_width)),
             Image.ANTIALIAS)
@@ -57,6 +64,34 @@ class UI(tk.Frame):
             self.image_y,
             anchor='s',
             image=self.canvas_for_image.image)
+        size = (self.canvas_width, self.canvas_height)
+        self.pil_image = Image.new('RGB', size, color='white')
+        self.draw = ImageDraw.Draw(self.pil_image)
+
+    def createMenu(self, master):
+        menu_command = Menu(self)
+        menu = tk.Menu(master)
+        fileMenu = tk.Menu(menu, tearoff=0)
+        menu.add_cascade(label='File', menu=fileMenu)
+        fileMenu.add_command(label='New', command=menu_command.cleanUp)
+        fileMenu.add_command(label='Open', command=menu_command.openFile)
+        fileMenu.add_command(label='Save as...', command=menu_command.saveImage)
+        saveMenu = tk.Menu(menu, tearoff=0)
+        fileMenu.add_cascade(label='Save as txt', menu=saveMenu)
+        saveMenu.add_command(label='Start tracking')
+        saveMenu.add_command(label='End tracking')
+        fileMenu.add_separator()
+        fileMenu.add_command(label='Exit', command=menu_command.exit)
+        self.master.config(menu=menu)
+
+    def openFile(self):
+        self.cleanUp()
+        file = filedialog.askopenfilename()
+        with open(file, 'r') as file_handle:
+            for line in file_handle:
+                line = line.rstrip()
+                self.result = line
+                InputProcessing(self)
 
     def main(self, event):
         self.result = self.entry.get()
@@ -65,4 +100,5 @@ class UI(tk.Frame):
 
 root = tk.Tk()
 ui = UI(root)
+root.wm_title('Logomocja')
 root.mainloop()
