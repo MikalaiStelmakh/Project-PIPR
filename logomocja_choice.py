@@ -4,6 +4,7 @@ from logomocja_borders_crossing import (
     upperBorderCrossing, bottomBorderCrossing,
     leftBorderCrossing, rightBorderCrossing
 )
+from asd import border
 
 
 class Turn:

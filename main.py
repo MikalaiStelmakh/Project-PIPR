@@ -1,6 +1,5 @@
 from PIL import Image, ImageTk, ImageDraw
 import tkinter as tk
-from tkinter import filedialog
 from InputProcessing import InputProcessing
 from menu import Menu
 
@@ -43,7 +42,7 @@ class UI(tk.Frame):
         self.label.pack(side='top', anchor='w')
 
         self.entry_frame = tk.Frame(master)
-        self.entry_frame.place(rely=0.97, relwidth=1, relheight=0.03)
+        self.entry_frame.place(rely=0.97, relwidth=1.1, relheight=0.03)
         self.entry = tk.Entry(self.entry_frame, bg='white', fg='black')
         self.new_image_x, self.new_image_y = self.image_x, self.image_y
         self.entry.bind("<Return>", self.main)
@@ -67,6 +66,7 @@ class UI(tk.Frame):
         size = (self.canvas_width, self.canvas_height)
         self.pil_image = Image.new('RGB', size, color='white')
         self.draw = ImageDraw.Draw(self.pil_image)
+        self.commands_data = []
 
     def createMenu(self, master):
         menu_command = Menu(self)
@@ -75,26 +75,16 @@ class UI(tk.Frame):
         menu.add_cascade(label='File', menu=fileMenu)
         fileMenu.add_command(label='New', command=menu_command.cleanUp)
         fileMenu.add_command(label='Open', command=menu_command.openFile)
-        fileMenu.add_command(label='Save as...', command=menu_command.saveImage)
-        saveMenu = tk.Menu(menu, tearoff=0)
-        fileMenu.add_cascade(label='Save as txt', menu=saveMenu)
-        saveMenu.add_command(label='Start tracking')
-        saveMenu.add_command(label='End tracking')
+        fileMenu.add_command(label='Save image as...',
+                             command=menu_command.saveImage)
+        fileMenu.add_command(label='Save txt', command=menu_command.saveTxt)
         fileMenu.add_separator()
         fileMenu.add_command(label='Exit', command=menu_command.exit)
         self.master.config(menu=menu)
 
-    def openFile(self):
-        self.cleanUp()
-        file = filedialog.askopenfilename()
-        with open(file, 'r') as file_handle:
-            for line in file_handle:
-                line = line.rstrip()
-                self.result = line
-                InputProcessing(self)
-
     def main(self, event):
         self.result = self.entry.get()
+        self.commands_data.append(self.result)
         InputProcessing(self)
 
 

@@ -195,8 +195,7 @@ class rightBorderCrossing(borderCrossing):
         self.new_image_y = right_y
         super().drawIfNotUp(
             self.image_x, self.image_y,
-            self.canvas_width, right_y
-        )
+            self.canvas_width, right_y)
         while self.new_image_x > self.canvas_width:
             self.passed_x += self.canvas_width
             self.new_image_x = self.move_x - self.passed_x

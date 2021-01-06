@@ -61,17 +61,15 @@ class InputProcessing:
 
     def turnCommand(self):
         turn = Turn(self.master)
-        self.master.previous_angle = turn.angle
-        self.master.simple_angle = turn.simplifyAngle()
-        self.master.direction = turn.direction
-        self.master.anchor = turn.setImageAnchor()
-        turn.setRotateValue(self.master.units)
-        turn.setResizeValue()
-        self.master.canvas_for_image.image = turn.createImage()
-        self.master.imagesprite = turn.drawImage()
+        turn.simplifyAngle()
+        turn.setImageAnchor()
+        turn.createImage()
+        turn.drawImage()
 
     def moveCommand(self):
         move = Move(self.master)
-        self.master.image_x, self.master.image_y = move.setNewCoordinates()
+        move.setNewCoordinates()
         move.moveImage()
         move.drawLine()
+        self.master.image_x = move.new_image_x
+        self.master.image_y = move.new_image_y
