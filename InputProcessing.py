@@ -69,7 +69,3 @@ class InputProcessing:
     def moveCommand(self):
         move = Move(self.master)
         move.setNewCoordinates()
-        move.moveImage()
-        move.drawLine()
-        self.master.image_x = move.new_image_x
-        self.master.image_y = move.new_image_y

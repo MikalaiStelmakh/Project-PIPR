@@ -26,7 +26,7 @@ class UI(tk.Frame):
         self.image_width = int(self.canvas_width*0.05)
         self.image_height = int(self.canvas_height*0.05)
 
-        self.image = Image.open('turtle.png')
+        self.image = Image.open('project-pipr/turtle.png')
 
         self.initialOptions()
 

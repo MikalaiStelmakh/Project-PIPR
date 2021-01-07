@@ -1,10 +1,5 @@
 from PIL import Image, ImageTk
 import math
-from logomocja_borders_crossing import (
-    upperBorderCrossing, bottomBorderCrossing,
-    leftBorderCrossing, rightBorderCrossing
-)
-from asd import border
 
 
 class Turn:
@@ -111,49 +106,97 @@ class Move:
             y = -y
         return x, y
 
+    def drawIfDown(self, x0, y0, x1, y1):
+        if self.ui.is_up is False:
+            self.ui.canvas_for_image.create_line(x0, y0, x1, y1)
+            self.ui.draw.line([x0, y0, x1, y1], fill='black')
+
     def setNewCoordinates(self):
         self.move_x, self.move_y = self.moveValue()
-        self.new_image_x = self.ui.image_x + self.move_x
-        self.new_image_y = self.ui.image_y + self.move_y
-        if self.isBorderCrossed() is True:
-            crossed_border = self.borderCrossed()
-            self.new_image_x = crossed_border.new_image_x
-            self.new_image_y = crossed_border.new_image_y
+        self.border()
 
-    def isBorderCrossed(self):
-        self.isBorderCrossed = (
-            self.new_image_x < 0 or
-            self.new_image_y > self.ui.canvas_height or
-            self.new_image_x > self.ui.canvas_width or
-            self.new_image_y < 0
-            )
-        return self.isBorderCrossed
+    def border(self):
 
-    def borderCrossed(self):
-        if self.new_image_y < 0:
-            crossed_border = upperBorderCrossing(self, self.ui)
-        elif self.new_image_y > self.ui.canvas_height:
-            crossed_border = bottomBorderCrossing(self, self.ui)
-        elif self.new_image_x > self.ui.canvas_width:
-            crossed_border = rightBorderCrossing(self, self.ui)
-        elif self.new_image_x < 0:
-            crossed_border = leftBorderCrossing(self, self.ui)
-        return crossed_border
-
-    def moveImage(self):
-        if self.isBorderCrossed is True:
-            self.move_x = self.new_image_x - self.ui.image_x
-            self.move_y = self.new_image_y - self.ui.image_y
-        self.ui.canvas_for_image.move(self.ui.imagesprite, self.move_x, self.move_y)
-
-    def drawLine(self):
-        if self.isBorderCrossed is False:
-            if self.ui.is_up is False:
-                self.ui.canvas_for_image.create_line(
-                    self.ui.image_x, self.ui.image_y,
-                    self.new_image_x, self.new_image_y
-                )
-                self.ui.draw.line(
-                    [self.ui.image_x, self.ui.image_y,
-                     self.new_image_x, self.new_image_y], fill='black'
-                )
+        image_x = self.ui.image_x
+        image_y = self.ui.image_y
+        canvas_width = self.ui.canvas_width
+        canvas_height = self.ui.canvas_height
+        angle = self.ui.simple_angle
+        imagesprite = self.ui.imagesprite
+        new_image_x = image_x + self.move_x
+        new_image_y = image_y + self.move_y
+        passed_x, passed_y = 0, 0
+        if angle == 90 or angle == 270:
+            angle = 0
+        while new_image_x < 0 or new_image_x > canvas_width or new_image_y < 0 or new_image_y > canvas_height:
+            if self.move_x > 0:
+                x = canvas_width - image_x
+                y = x*math.tan(math.radians(angle))
+                if self.move_y < 0: y = -y
+                if image_y + y < 0:
+                    y = -image_y
+                    x = -y/math.tan(math.radians(angle))
+                    x1 = image_x + x
+                    y1 = 0
+                    new_y = canvas_height
+                    new_x = x1
+                elif image_y + y > canvas_height:
+                    y = canvas_height - image_y
+                    x = y/math.tan(math.radians(angle))
+                    x1 = image_x + x
+                    y1 = canvas_height
+                    new_y = 0
+                    new_x = x1
+                else:
+                    x1 = canvas_width
+                    y1 = image_y + y
+                    new_y = y1
+                    new_x = 0
+            elif self.move_x < 0:
+                x = -image_x
+                y = x*math.tan(math.radians(angle))
+                if self.move_y > 0: y = -y
+                if image_y + y < 0:
+                    y = -image_y
+                    x = y/math.tan(math.radians(angle))
+                    x1 = image_x + x
+                    y1 = 0
+                    new_y = canvas_height
+                    new_x = x1
+                elif image_y + y > canvas_height:
+                    y = canvas_height - image_y
+                    x = -y/math.tan(math.radians(angle))
+                    x1 = image_x + x
+                    y1 = canvas_height
+                    new_y = 0
+                    new_x = x1
+                else:
+                    x1 = 0
+                    y1 = image_y + y
+                    new_y = y1
+                    new_x = canvas_width
+            else:
+                x = 0
+                if self.move_y > 0:
+                    y = canvas_height - image_y
+                    y1 = canvas_height
+                    new_y = 0
+                else:
+                    y = -image_y
+                    y1 = 0
+                    new_y = canvas_height
+                x1 = image_x
+                new_x = image_x
+            self.drawIfDown(image_x, image_y, x1, y1)
+            image_x = new_x
+            image_y = new_y
+            passed_x += x
+            passed_y += y
+            new_image_x = image_x + self.move_x - passed_x
+            new_image_y = image_y + self.move_y - passed_y
+        self.drawIfDown(image_x, image_y, new_image_x, new_image_y)
+        move_img_x = new_image_x - start_x
+        move_img_y = new_image_y - start_y
+        self.ui.canvas_for_image.move(imagesprite, move_img_x, move_img_y)
+        self.ui.image_x = new_image_x
+        self.ui.image_y = new_image_y
