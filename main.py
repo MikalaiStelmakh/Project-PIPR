@@ -26,9 +26,9 @@ class UI(tk.Frame):
         self.image_width = int(self.canvas_width*0.05)
         self.image_height = int(self.canvas_height*0.05)
 
-        self.image = Image.open('project-pipr/turtle.png')
+        self.image = Image.open('turtle.png')
 
-        self.initialOptions()
+        self.initialValues()
 
         self.label_frame = tk.Frame(master, borderwidth=2, relief="sunken")
         self.label_frame.place(rely=0.9, relwidth=1, relheight=0.07)
@@ -48,7 +48,7 @@ class UI(tk.Frame):
         self.entry.bind("<Return>", self.main)
         self.entry.place(relwidth=1)
 
-    def initialOptions(self):
+    def initialValues(self):
         self.image_x = self.canvas_width*0.5
         self.image_y = self.canvas_height*0.5 + self.image_height/2
         self.simple_angle = 0

@@ -1,7 +1,7 @@
 from tkinter import filedialog
 from InputProcessing import InputProcessing
 
-# TODO: save commands as txt, open file has 2 options: open as new file and open as addition to already existing file
+# TODO: save commands as txt, open file has 2 options: open as new file and open as an addition to already existing file
 
 
 class Menu:
@@ -11,7 +11,7 @@ class Menu:
     def cleanUp(self):
         self.ui.canvas_for_image.delete('all')
         self.ui.canvas_for_image.delete(self.ui.imagesprite)
-        self.ui.initialOptions()
+        self.ui.initialValues()
         self.ui.label.config(text='Hello')
 
     def openFile(self):

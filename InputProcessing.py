@@ -68,4 +68,3 @@ class InputProcessing:
 
     def moveCommand(self):
         move = Move(self.master)
-        move.setNewCoordinates()
