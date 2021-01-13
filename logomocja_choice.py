@@ -60,13 +60,20 @@ class Turn:
         self.ui.previous_angle = -rotate_value
         return rotate_value
 
-    def setResizeValue(self):
-        resize_value = (self.ui.image_height, self.ui.image_width)
-        return resize_value
+    # def setResizeValue(self):
+    #     if self.angle == 0 or self.angle == 360 or self.angle == 180:
+    #         resize_value = (self.ui.image_height, self.ui.image_width)
+    #     elif self.angle == 90 or self.angle == 270:
+    #         resize_value = (self.ui.image_width, self.ui.image_height)
+    #     else:
+    #         image_width = self.ui.image_height * math.cos(math.radians(self.angle)) + self.ui.image_width * math.sin(math.radians(self.angle))
+    #         image_height = self.ui.image_height * math.sin(math.radians(self.angle)) + self.ui.image_width * math.cos(math.radians(self.angle))
+    #         resize_value = (int(image_height), int(image_width))
+    #     return resize_value
 
     def createImage(self):
         rotate_value = self.setRotateValue(self.ui.units)
-        resize_value = self.setResizeValue()
+        resize_value = (self.ui.image_height, self.ui.image_width)
         self.ui.canvas_for_image.image = ImageTk.PhotoImage(
             self.ui.image.rotate(rotate_value).resize(resize_value),
             Image.ANTIALIAS
