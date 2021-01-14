@@ -2,69 +2,77 @@ from logomocja_choice import Turn, Move
 
 
 class InputProcessing:
-    def __init__(self, master):
-        self.master = master
+    def __init__(self, ui, gui):
+        self.ui = ui
+        self.gui = gui
         self.chooseCommand()
 
     def splitInput(self, message):
         splitted_message = message.split()
-        self.master.command = splitted_message[0]
-        self.master.units = float(splitted_message[1])
+        command = splitted_message[0]
+        units = float(splitted_message[1])
+        return command, units
 
     def valueErrorText(self):
-        self.master.text = (
+        text = (
             'ValueError\n'
             'Example of a correct entry: naprzod 100'
             )
+        self.gui.errors += 1
+        return text
 
     def undefinedCommandText(self):
-        self.master.text = (
-            f'Undefined command: {self.master.result}\n'
+        text = (
+            f'Undefined command: {self.gui.text}\n'
             'Example of a correct entry: obrot 90'
             )
+        self.gui.errors += 1
+        return text
 
     def indexErrorText(self):
-        if self.master.result == 'podnies' or self.master.result == 'opusc':
-            self.master.text = self.master.result
+        if self.gui.text == 'podnies' or self.gui.text == 'opusc':
+            text = self.gui.text
         else:
-            self.master.text = (
-                f'Undefined command: {self.master.result}\n'
+            text = (
+                f'Undefined command: {self.gui.text}\n'
                 'Example of a correct entry: obrot 90'
                 )
+        self.gui.errors += 1
+        return text
 
     def chooseCommand(self):
-        if self.master.result == 'podnies':
-            self.master.is_up = True
-        elif self.master.result == 'opusc':
-            self.master.is_up = False
+        if self.gui.text == 'podnies':
+            self.gui.is_up = True
+        elif self.gui.text == 'opusc':
+            self.gui.is_up = False
         try:
-            self.splitInput(self.master.result)
-            if self.master.command == 'obrot':
-                self.master.text = self.master.result
-                self.turnCommand()
-            elif self.master.command == 'naprzod':
-                self.master.text = self.master.result
-                self.moveCommand()
-            elif self.master.command == 'podnies' or self.master.command == 'opusc':
-                self.valueErrorText()
+            command, units = self.splitInput(self.gui.text)
+            if command == 'obrot':
+                text = self.gui.text
+                self.turnCommand(units)
+            elif command == 'naprzod':
+                text = self.gui.text
+                self.moveCommand(units)
+            elif command == 'podnies' or command == 'opusc':
+                text = self.valueErrorText()
             else:
-                self.undefinedCommandText()
+                text = self.undefinedCommandText()
         except IndexError:
-            self.indexErrorText()
+            text = self.indexErrorText()
         except ValueError:
-            self.valueErrorText()
-        self.returnEntry()
+            text = self.valueErrorText()
+        self.returnEntry(text)
 
-    def returnEntry(self):
-        self.master.label.config(text=self.master.text)
-        self.master.entry.delete(0, 'end')
+    def returnEntry(self, text):
+        self.ui.label.config(text=text)
+        self.ui.entry.delete(0, 'end')
 
-    def turnCommand(self):
-        turn = Turn(self.master)
+    def turnCommand(self, text):
+        turn = Turn(self.ui, self.gui, text)
         turn.simplifyAngle()
         turn.setImageAnchor()
         turn.createImage()
         turn.drawImage()
 
-    def moveCommand(self):
-        move = Move(self.master)
+    def moveCommand(self, text):
+        Move(self.ui, self.gui, text)

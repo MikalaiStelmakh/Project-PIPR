@@ -1,27 +1,45 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageDraw
 from ui_logomocja import UI
+from menu import Menu
+from InputProcessing import InputProcessing
 
 
 class MainWindow(tk.Frame):
     def __init__(self, master):
         self.master = master
-        self.ui = UI(master)
+        self.ui = UI()
+        self.ui.setupUi(master)
+        self.createMenu()
         self.initialValues()
         self.createImage()
         self.ui.entry.bind("<Return>", self.main)
 
     def createImage(self):
-        self.image = Image.open('turtle.png')
         size = (self.image_height, self.image_width)
+        self.ui.image = Image.open('turtle.png')
         self.ui.canvas_for_image.image = ImageTk.PhotoImage(
-            self.image.resize(size),
+            self.ui.image.resize(size),
             Image.ANTIALIAS)
-        self.imagesprite = self.ui.canvas_for_image.create_image(
+        self.ui.imagesprite = self.ui.canvas_for_image.create_image(
             self.image_x,
             self.image_y,
             anchor='s',
             image=self.ui.canvas_for_image.image)
+        canvas_size = (self.canvas_width, self.canvas_height)
+        self.ui.pil_image = Image.new('RGB', canvas_size, color='white')
+        self.ui.draw = ImageDraw.Draw(self.ui.pil_image)
+
+    def createMenu(self):
+        menu_command = Menu(self.ui, self)
+        self.ui.fileMenu.add_command(label='New', command=menu_command.cleanUp)
+        self.ui.fileMenu.add_command(label='Open', command=menu_command.openFile)
+        self.ui.fileMenu.add_command(label='Save image as...',
+                                     command=menu_command.saveImage)
+        self.ui.fileMenu.add_command(label='Save txt', command=menu_command.saveTxt)
+        self.ui.fileMenu.add_separator()
+        self.ui.fileMenu.add_command(label='Exit', command=menu_command.exit)
+        self.master.config(menu=self.ui.menu)
 
     def initialValues(self):
         self.canvas_width = self.ui.canvas_for_image.winfo_width()
@@ -35,15 +53,13 @@ class MainWindow(tk.Frame):
         self.direction = 'N'
         self.previous_angle = 0
         self.is_up = False
-        size = (self.canvas_width, self.canvas_height)
-        self.pil_image = Image.new('RGB', size, color='white')
-        self.draw = ImageDraw.Draw(self.pil_image)
         self.commands_data = []
+        self.errors = 0
 
     def main(self, event):
         self.text = self.ui.entry.get()
-        self.ui.label.config(text=self.text)
-        self.ui.entry.delete(0, 'end')
+        self.commands_data.append(self.text)
+        InputProcessing(self.ui, self)
 
 
 def guiMain():

@@ -1,13 +1,15 @@
 import tkinter as tk
-from menu import Menu
 
 
 class UI(tk.Frame):
-    def __init__(self, master):
+    def setupUi(self, master):
         self.master = master
         self.canvas = tk.Canvas(master, height=700, width=800)
         self.canvas.pack()
-        self.createMenu()
+        self.menu = tk.Menu(self.master)
+        self.fileMenu = tk.Menu(self.menu, tearoff=0)
+        self.master.config(menu=self.menu)
+        self.menu.add_cascade(label='File', menu=self.fileMenu)
         self.canvas_for_image = tk.Canvas(master, bg='white')
         self.canvas_for_image.place(
             relx=0.5,
@@ -30,17 +32,3 @@ class UI(tk.Frame):
         self.entry_frame.place(rely=0.97, relwidth=1.1, relheight=0.03)
         self.entry = tk.Entry(self.entry_frame, bg='white', fg='black')
         self.entry.place(relwidth=1)
-
-    def createMenu(self):
-        menu_command = Menu(self)
-        menu = tk.Menu(self.master)
-        fileMenu = tk.Menu(menu, tearoff=0)
-        menu.add_cascade(label='File', menu=fileMenu)
-        fileMenu.add_command(label='New', command=menu_command.cleanUp)
-        fileMenu.add_command(label='Open', command=menu_command.openFile)
-        fileMenu.add_command(label='Save image as...',
-                             command=menu_command.saveImage)
-        fileMenu.add_command(label='Save txt', command=menu_command.saveTxt)
-        fileMenu.add_separator()
-        fileMenu.add_command(label='Exit', command=menu_command.exit)
-        self.master.config(menu=menu)
