@@ -1,10 +1,22 @@
 from logomocja_choice import Turn, Move
+from random import randint
+
+
+def getExample():
+    commands = ['naprzod', 'obrot', 'podnies', 'opusc']
+    command = commands[randint(0, 3)]
+    if command in ["naprzod", "obrot"]:
+        units = randint(1, 10)*10
+    else:
+        units = None
+    return f'{command} {units if units else ""}'
 
 
 class InputProcessing:
-    def __init__(self, ui, gui):
+    def __init__(self, ui, gui, text):
         self.ui = ui
         self.gui = gui
+        self.text = text
         self.chooseCommand()
 
     def splitInput(self, message):
@@ -14,53 +26,45 @@ class InputProcessing:
         return command, units
 
     def valueErrorText(self):
-        text = (
-            'ValueError\n'
-            'Example of a correct entry: naprzod 100'
-            )
+        text = 'ValueError\n'
         self.gui.errors += 1
         return text
 
     def undefinedCommandText(self):
-        text = (
-            f'Undefined command: {self.gui.text}\n'
-            'Example of a correct entry: obrot 90'
-            )
+        text = f'Undefined command: {self.text}\n'
         self.gui.errors += 1
         return text
 
     def indexErrorText(self):
-        if self.gui.text == 'podnies' or self.gui.text == 'opusc':
-            text = self.gui.text
-        else:
-            text = (
-                f'Undefined command: {self.gui.text}\n'
-                'Example of a correct entry: obrot 90'
-                )
+        text = 'IndexError\n'
         self.gui.errors += 1
         return text
 
     def chooseCommand(self):
-        if self.gui.text == 'podnies':
+        if self.text == 'podnies':
             self.gui.is_up = True
-        elif self.gui.text == 'opusc':
+        elif self.text == 'opusc':
             self.gui.is_up = False
+        example = f'Example of a correct entry: {getExample()}'
         try:
-            command, units = self.splitInput(self.gui.text)
+            command, units = self.splitInput(self.text)
             if command == 'obrot':
-                text = self.gui.text
+                text = self.text
                 self.turnCommand(units)
             elif command == 'naprzod':
-                text = self.gui.text
+                text = self.text
                 self.moveCommand(units)
             elif command == 'podnies' or command == 'opusc':
-                text = self.valueErrorText()
+                text = self.valueErrorText() + example
             else:
-                text = self.undefinedCommandText()
+                text = self.undefinedCommandText() + example
         except IndexError:
-            text = self.indexErrorText()
+            if self.text == 'podnies' or self.text == 'opusc':
+                text = self.text
+            else:
+                text = self.indexErrorText() + example
         except ValueError:
-            text = self.valueErrorText()
+            text = self.valueErrorText() + example
         self.returnEntry(text)
 
     def returnEntry(self, text):

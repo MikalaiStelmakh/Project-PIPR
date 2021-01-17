@@ -32,11 +32,14 @@ class MainWindow(tk.Frame):
 
     def createMenu(self):
         menu_command = Menu(self.ui, self)
-        self.ui.fileMenu.add_command(label='New', command=menu_command.cleanUp)
-        self.ui.fileMenu.add_command(label='Open', command=menu_command.openFile)
+        self.ui.fileMenu.add_command(label='New',
+                                     command=menu_command.cleanUp)
+        self.ui.fileMenu.add_command(label='Open',
+                                     command=menu_command.openFile)
         self.ui.fileMenu.add_command(label='Save image as...',
                                      command=menu_command.saveImage)
-        self.ui.fileMenu.add_command(label='Save txt', command=menu_command.saveTxt)
+        self.ui.fileMenu.add_command(label='Save txt',
+                                     command=menu_command.saveTxt)
         self.ui.fileMenu.add_separator()
         self.ui.fileMenu.add_command(label='Exit', command=menu_command.exit)
         self.master.config(menu=self.ui.menu)
@@ -56,10 +59,14 @@ class MainWindow(tk.Frame):
         self.commands_data = []
         self.errors = 0
 
+    def getInput(self):
+        text = self.ui.entry.get()
+        return text
+
     def main(self, event):
-        self.text = self.ui.entry.get()
+        self.text = self.getInput()
         self.commands_data.append(self.text)
-        InputProcessing(self.ui, self)
+        InputProcessing(self.ui, self, self.text)
 
 
 def guiMain():

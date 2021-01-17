@@ -28,7 +28,10 @@ class Menu:
                     InputProcessing(self.ui, self.gui)
             errors = self.gui.errors
             if errors > 0:
-                message = f'{errors} {"errors" if errors > 1 else "error"} occured while opening the file'
+                message = (
+                    f'{errors} {"errors" if errors > 1 else "error"}'
+                    'occured while opening the file'
+                    )
                 messagebox.showwarning('Warning', message)
             self.ui.label.config(text=file)
 
@@ -54,4 +57,4 @@ class Menu:
 
     def exit(self):
         self.ui.master.destroy()
-        self.gui.pil_image.close()
+        self.ui.pil_image.close()

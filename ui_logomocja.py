@@ -31,4 +31,5 @@ class UI(tk.Frame):
         self.entry_frame = tk.Frame(master)
         self.entry_frame.place(rely=0.97, relwidth=1.1, relheight=0.03)
         self.entry = tk.Entry(self.entry_frame, bg='white', fg='black')
+        self.entry.focus()
         self.entry.place(relwidth=1)
