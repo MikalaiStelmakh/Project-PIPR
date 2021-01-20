@@ -8,8 +8,10 @@ class UI(tk.Frame):
         self.canvas.pack()
         self.menu = tk.Menu(self.master)
         self.fileMenu = tk.Menu(self.menu, tearoff=0)
+        self.helpMenu = tk.Menu(self.menu, tearoff=0)
         self.master.config(menu=self.menu)
         self.menu.add_cascade(label='File', menu=self.fileMenu)
+        self.menu.add_cascade(label='Help', menu=self.helpMenu)
         self.canvas_for_image = tk.Canvas(master, bg='white')
         self.canvas_for_image.place(
             relx=0.5,

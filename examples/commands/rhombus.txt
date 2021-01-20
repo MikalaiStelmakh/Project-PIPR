@@ -1,0 +1,21 @@
+turn 270
+up
+move 100
+turn -90
+move 50
+turn 180
+down
+turn 30
+move 200
+turn 120
+move 200
+turn 120
+move 200
+turn -120
+move 200
+turn -120
+move 200
+up
+move 100
+turn 270
+down

@@ -1,8 +1,8 @@
 import tkinter as tk
 from PIL import Image, ImageTk, ImageDraw
-from ui_logomocja import UI
+from ui import UI
 from menu import Menu
-from InputProcessing import InputProcessing
+from inputProcessing import InputProcessing
 
 
 class MainWindow(tk.Frame):
@@ -19,7 +19,7 @@ class MainWindow(tk.Frame):
         size = (self.image_height, self.image_width)
         self.ui.image = Image.open('turtle.png')
         self.ui.canvas_for_image.image = ImageTk.PhotoImage(
-            self.ui.image.resize(size),
+            self.ui.image.rotate(0, expand=True).resize(size),
             Image.ANTIALIAS)
         self.ui.imagesprite = self.ui.canvas_for_image.create_image(
             self.image_x,
@@ -42,6 +42,10 @@ class MainWindow(tk.Frame):
                                      command=menu_command.saveTxt)
         self.ui.fileMenu.add_separator()
         self.ui.fileMenu.add_command(label='Exit', command=menu_command.exit)
+        self.ui.helpMenu.add_command(label='User guide',
+                                     command=menu_command.userGuide)
+        self.ui.helpMenu.add_command(label='For developers',
+                                     command=menu_command.forDevelopers)
         self.master.config(menu=self.ui.menu)
 
     def initialValues(self):

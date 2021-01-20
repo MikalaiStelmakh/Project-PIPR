@@ -1,0 +1,14 @@
+move 200
+turn 90
+jump 100
+move 200
+ttrn 90
+turn 90
+move 200
+turn 90
+move 200
+up 10
+up
+move 100
+turn 180
+down
