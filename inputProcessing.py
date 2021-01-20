@@ -1,11 +1,11 @@
-from logomocja_choice import Turn, Move
+from choice import Turn, Move
 from random import randint
 
 
 def getExample():
-    commands = ['naprzod', 'obrot', 'podnies', 'opusc']
+    commands = ['move', 'turn', 'up', 'down']
     command = commands[randint(0, 3)]
-    if command in ["naprzod", "obrot"]:
+    if command in ["move", "turn"]:
         units = randint(1, 10)*10
     else:
         units = None
@@ -41,25 +41,25 @@ class InputProcessing:
         return text
 
     def chooseCommand(self):
-        if self.text == 'podnies':
+        if self.text == 'up':
             self.gui.is_up = True
-        elif self.text == 'opusc':
+        elif self.text == 'down':
             self.gui.is_up = False
         example = f'Example of a correct entry: {getExample()}'
         try:
             command, units = self.splitInput(self.text)
-            if command == 'obrot':
+            if command == 'turn':
                 text = self.text
                 self.turnCommand(units)
-            elif command == 'naprzod':
+            elif command == 'move':
                 text = self.text
                 self.moveCommand(units)
-            elif command == 'podnies' or command == 'opusc':
+            elif command == 'up' or command == 'down':
                 text = self.valueErrorText() + example
             else:
                 text = self.undefinedCommandText() + example
         except IndexError:
-            if self.text == 'podnies' or self.text == 'opusc':
+            if self.text == 'up' or self.text == 'down':
                 text = self.text
             else:
                 text = self.indexErrorText() + example

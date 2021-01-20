@@ -1,6 +1,6 @@
 from PIL import Image, ImageTk
 import math
-from logomocja_borders_crossing import BorderCrossed
+from bordersCrossing import BorderCrossed
 
 
 class Turn:
@@ -62,22 +62,26 @@ class Turn:
         self.gui.previous_angle = -rotate_value
         return rotate_value
 
-    # def setResizeValue(self):
-    #     if self.angle == 0 or self.angle == 360 or self.angle == 180:
-    #         resize_value = (self.ui.image_height, self.ui.image_width)
-    #     elif self.angle == 90 or self.angle == 270:
-    #         resize_value = (self.ui.image_width, self.ui.image_height)
-    #     else:
-    #         image_width = self.ui.image_height * math.cos(math.radians(self.angle)) + self.ui.image_width * math.sin(math.radians(self.angle))
-    #         image_height = self.ui.image_height * math.sin(math.radians(self.angle)) + self.ui.image_width * math.cos(math.radians(self.angle))
-    #         resize_value = (int(image_height), int(image_width))
-    #     return resize_value
+    def setResizeValue(self):
+        if self.angle == 0 or self.angle == 360 or self.angle == 180:
+            resize_value = (self.gui.image_height, self.gui.image_width)
+        elif self.angle == 90 or self.angle == 270:
+            resize_value = (self.gui.image_width, self.gui.image_height)
+        else:
+            sinus = math.sin(math.radians(self.angle))
+            cosinus = math.cos(math.radians(self.angle))
+            height = self.gui.image_height
+            width = self.gui.image_width
+            image_width = height * cosinus + width * sinus
+            image_height = height * sinus + width * cosinus
+            resize_value = (int(image_height), int(image_width))
+        return resize_value
 
     def createImage(self):
         rotate_value = self.setRotateValue(self.units)
-        resize_value = (self.gui.image_height, self.gui.image_width)
+        resize_value = self.setResizeValue()
         self.ui.canvas_for_image.image = ImageTk.PhotoImage(
-            self.ui.image.rotate(rotate_value).resize(resize_value),
+            self.ui.image.rotate(rotate_value, expand=True).resize(resize_value),
             Image.ANTIALIAS
             )
 
@@ -98,7 +102,8 @@ class Move:
         self.start_x = self.gui.image_x
         self.start_y = self.gui.image_y
         self.setNewCoordinates()
-        self.drawIfDown(self.gui.image_x, self.gui.image_y, self.new_image_x, self.new_image_y)
+        self.drawIfDown(self.gui.image_x, self.gui.image_y,
+                        self.new_image_x, self.new_image_y)
         self.gui.image_x = self.new_image_x
         self.gui.image_y = self.new_image_y
         self.moveImage()
@@ -153,4 +158,5 @@ class Move:
     def moveImage(self):
         move_img_x = self.new_image_x - self.start_x
         move_img_y = self.new_image_y - self.start_y
-        self.ui.canvas_for_image.move(self.ui.imagesprite, move_img_x, move_img_y)
+        imagesprite = self.ui.imagesprite
+        self.ui.canvas_for_image.move(imagesprite, move_img_x, move_img_y)

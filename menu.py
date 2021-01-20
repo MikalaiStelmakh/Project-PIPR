@@ -1,7 +1,5 @@
 from tkinter import filedialog, messagebox
-from InputProcessing import InputProcessing
-
-# TODO: save commands as txt, open file has 2 options: open as new file and open as an addition to already existing file
+from inputProcessing import InputProcessing
 
 
 class Menu:
@@ -25,11 +23,11 @@ class Menu:
                     line = line.rstrip()
                     self.gui.text = line
                     self.gui.commands_data.append(self.gui.text)
-                    InputProcessing(self.ui, self.gui)
+                    InputProcessing(self.ui, self.gui, self.gui.text)
             errors = self.gui.errors
             if errors > 0:
                 message = (
-                    f'{errors} {"errors" if errors > 1 else "error"}'
+                    f'{errors} {"errors" if errors > 1 else "error"} '
                     'occured while opening the file'
                     )
                 messagebox.showwarning('Warning', message)
@@ -54,6 +52,12 @@ class Menu:
             with open(filename, 'w') as file_text:
                 for command in self.gui.commands_data:
                     file_text.write(command + '\n')
+
+    def userGuide(self):
+        pass
+
+    def forDevelopers(self):
+        pass
 
     def exit(self):
         self.ui.master.destroy()
