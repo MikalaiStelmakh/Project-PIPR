@@ -2,6 +2,7 @@ from choice import Turn, Move
 from random import randint
 
 
+# Generates an example of a correct entry.
 def getExample():
     commands = ['move', 'turn', 'up', 'down']
     command = commands[randint(0, 3)]
@@ -19,6 +20,7 @@ class InputProcessing:
         self.text = text
         self.chooseCommand()
 
+    # Splits the input into a command and units.
     def splitInput(self, message):
         splitted_message = message.split()
         command = splitted_message[0]
@@ -40,6 +42,7 @@ class InputProcessing:
         self.gui.errors += 1
         return text
 
+    # Check the input and selects the command depending on it.
     def chooseCommand(self):
         if self.text == 'up':
             self.gui.is_up = True
@@ -50,12 +53,12 @@ class InputProcessing:
             command, units = self.splitInput(self.text)
             if command == 'turn':
                 text = self.text
-                self.turnCommand(units)
+                Turn(self.ui, self.gui, units)
             elif command == 'move':
                 text = self.text
-                self.moveCommand(units)
+                Move(self.ui, self.gui, units)
             elif command == 'up' or command == 'down':
-                text = self.valueErrorText() + example
+                raise IndexError()
             else:
                 text = self.undefinedCommandText() + example
         except IndexError:
@@ -70,13 +73,3 @@ class InputProcessing:
     def returnEntry(self, text):
         self.ui.label.config(text=text)
         self.ui.entry.delete(0, 'end')
-
-    def turnCommand(self, text):
-        turn = Turn(self.ui, self.gui, text)
-        turn.simplifyAngle()
-        turn.setImageAnchor()
-        turn.createImage()
-        turn.drawImage()
-
-    def moveCommand(self, text):
-        Move(self.ui, self.gui, text)
