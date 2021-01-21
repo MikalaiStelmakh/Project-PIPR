@@ -13,8 +13,10 @@ class MainWindow(tk.Frame):
         self.createMenu()
         self.initialValues()
         self.createImage()
+        # When the enter is pressed, the main function is called.
         self.ui.entry.bind("<Return>", self.main)
 
+    # Creates an image at its original location.
     def createImage(self):
         size = (self.image_height, self.image_width)
         self.ui.image = Image.open('turtle.png')
@@ -27,6 +29,7 @@ class MainWindow(tk.Frame):
             anchor='s',
             image=self.ui.canvas_for_image.image)
         canvas_size = (self.canvas_width, self.canvas_height)
+        # Creates an invisible image, which is needed to save the created image.
         self.ui.pil_image = Image.new('RGB', canvas_size, color='white')
         self.ui.draw = ImageDraw.Draw(self.ui.pil_image)
 
@@ -42,17 +45,15 @@ class MainWindow(tk.Frame):
                                      command=menu_command.saveTxt)
         self.ui.fileMenu.add_separator()
         self.ui.fileMenu.add_command(label='Exit', command=menu_command.exit)
-        self.ui.helpMenu.add_command(label='User guide',
-                                     command=menu_command.userGuide)
-        self.ui.helpMenu.add_command(label='For developers',
-                                     command=menu_command.forDevelopers)
         self.master.config(menu=self.ui.menu)
 
+    # Values set at program start.
     def initialValues(self):
         self.canvas_width = self.ui.canvas_for_image.winfo_width()
         self.canvas_height = self.ui.canvas_for_image.winfo_height()
         self.image_width = int(self.canvas_width*0.05)
         self.image_height = int(self.canvas_height*0.05)
+        # Sets the size of the picture relative to the size of the canvas.
         self.image_x = self.canvas_width*0.5
         self.image_y = self.canvas_height*0.5 + self.image_height/2
         self.new_image_x, self.new_image_y = self.image_x, self.image_y
@@ -60,7 +61,9 @@ class MainWindow(tk.Frame):
         self.direction = 'N'
         self.previous_angle = 0
         self.is_up = False
+        # List necessary to save the file in txt format from the menu.
         self.commands_data = []
+        # Changes the value when opening a file from the menu.
         self.errors = 0
 
     def getInput(self):
@@ -78,6 +81,7 @@ class Menu:
         self.ui = ui
         self.gui = gui
 
+    # Clears the canvas, variables return to their original values.
     def cleanUp(self):
         self.ui.canvas_for_image.delete('all')
         self.ui.canvas_for_image.delete(self.ui.imagesprite)
@@ -123,12 +127,6 @@ class Menu:
             with open(filename, 'w') as file_text:
                 for command in self.gui.commands_data:
                     file_text.write(command + '\n')
-
-    def userGuide(self):
-        pass
-
-    def forDevelopers(self):
-        pass
 
     def exit(self):
         self.ui.master.destroy()
