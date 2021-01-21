@@ -1,6 +1,6 @@
 from PIL import Image, ImageTk
 import math
-from bordersCrossing import BorderCrossed
+from borders import leftBorderCrossed, rightBorderCrossed, topOrBotBorderCrossed
 
 
 class Turn:
@@ -13,7 +13,14 @@ class Turn:
             self.angle -= 360
         while self.angle < 0:
             self.angle += 360
+        self.simplifyAngle()
+        self.setImageAnchor()
+        self.createImage()
+        self.drawImage()
 
+    # Simplifies an angle so that sin(angle)=move_y/units
+    # and cos(angle)=move_x/units.
+    # Sets the direction value that will be used to anchor the image.
     def simplifyAngle(self):
         if self.angle == 0 or self.angle == 360:
             self.direction = 'N'
@@ -37,6 +44,8 @@ class Turn:
             self.direction = 'NW'
         self.gui.simple_angle = self.angle
 
+    # Sets an anchor for the image so that the line drawn
+    # drawn by the turtle is always behind it.
     def setImageAnchor(self):
         if self.direction == 'E':
             self.anchor = 'w'
@@ -62,6 +71,7 @@ class Turn:
         self.gui.previous_angle = -rotate_value
         return rotate_value
 
+    # Sets the size of the picture so that it is always fully visible.
     def setResizeValue(self):
         if self.angle == 0 or self.angle == 360 or self.angle == 180:
             resize_value = (self.gui.image_height, self.gui.image_width)
@@ -108,6 +118,8 @@ class Move:
         self.gui.image_y = self.new_image_y
         self.moveImage()
 
+    # Depending on the angle sets the vertical and
+    # horizontal distances to be passed.
     def moveValue(self):
         units = self.units
         direction = self.gui.direction
@@ -140,20 +152,45 @@ class Move:
         self.new_image_x = self.gui.image_x + self.move_x
         self.new_image_y = self.gui.image_y + self.move_y
         if self.isBorderCrossed() is True:
-            crossed_border = BorderCrossed(
-                self.ui, self.gui,
-                self.new_image_x, self.new_image_y,
-                self.move_x, self.move_y)
-            self.gui.image_x = crossed_border.image_x
-            self.gui.image_y = crossed_border.image_y
-            self.new_image_x = crossed_border.new_image_x
-            self.new_image_y = crossed_border.new_image_y
+            self.borderCrossed()
 
     def isBorderCrossed(self):
         return (self.new_image_x < 0 or
                 self.new_image_x > self.gui.canvas_width or
                 self.new_image_y < 0 or
                 self.new_image_y > self.gui.canvas_height)
+
+    def borderCrossed(self):
+        passed_x, passed_y = 0, 0
+        angle = self.gui.simple_angle
+        if angle == 90 or angle == 270:
+            angle = 0
+        while self.isBorderCrossed() is True:
+            if self.move_x > 0:
+                x, y, x1, y1, new_x, new_y = rightBorderCrossed(
+                    self.gui.image_x, self.gui.image_y,
+                    self.gui.canvas_height, self.gui.canvas_width,
+                    self.move_y, self.gui.simple_angle
+                )
+            elif self.move_x < 0:
+                x, y, x1, y1, new_x, new_y = leftBorderCrossed(
+                    self.gui.image_x, self.gui.image_y,
+                    self.gui.canvas_height, self.gui.canvas_width,
+                    self.move_y, self.gui.simple_angle
+                )
+            else:
+                x, y, x1, y1, new_x, new_y = topOrBotBorderCrossed(
+                    self.gui.image_x, self.gui.image_y,
+                    self.gui.canvas_height, self.gui.canvas_width,
+                    self.move_y
+                )
+            self.drawIfDown(self.gui.image_x, self.gui.image_y, x1, y1)
+            self.gui.image_x = new_x
+            self.gui.image_y = new_y
+            passed_x += x
+            passed_y += y
+            self.new_image_x = self.gui.image_x + self.move_x - passed_x
+            self.new_image_y = self.gui.image_y + self.move_y - passed_y
 
     def moveImage(self):
         move_img_x = self.new_image_x - self.start_x
