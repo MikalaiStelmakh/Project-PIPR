@@ -80,11 +80,11 @@ The main program file. Initialization of the `MainWindow` class creates a `UI` c
 
 `initialValues` method sets the initial values of the variables when the program starts.
 
-`main` method creates a `InputProcessing` class (from [InputProcessing.py](#InputProcessing)) object responsible for processing the input.
+`main` method creates a `InputProcessing` class (from [inputProcessing.py](#InputProcessing)) object responsible for processing the input.
 
 ### <a name='inputProcessing'>`inputProcessing`</a>
 
-Module responsible for processing the input. If the input is correct, depending on it, creates an object of `Move` or `Turn` class (from [logomocja_choice.py](#Logomocja_choice)). Shows an error if the input is incorrect.
+Module responsible for processing the input. If the input is correct, depending on it, creates an object of `Move` or `Turn` class (from [choice.py](#Logomocja_choice)). Shows an error if the input is incorrect.
 
 ### <a name='choice'>`choice`</a>
 
