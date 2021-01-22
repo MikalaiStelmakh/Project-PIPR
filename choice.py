@@ -160,6 +160,8 @@ class Move:
                 self.new_image_y < 0 or
                 self.new_image_y > self.gui.canvas_height)
 
+    # Called if one or more borders of the canvas are crossed.
+    # Sets new coordinates of the image.
     def borderCrossed(self):
         passed_x, passed_y = 0, 0
         angle = self.gui.simple_angle
@@ -192,6 +194,7 @@ class Move:
             self.new_image_x = self.gui.image_x + self.move_x - passed_x
             self.new_image_y = self.gui.image_y + self.move_y - passed_y
 
+    # Moves the picture to a new location.
     def moveImage(self):
         move_img_x = self.new_image_x - self.start_x
         move_img_y = self.new_image_y - self.start_y

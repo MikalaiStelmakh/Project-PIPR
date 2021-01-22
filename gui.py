@@ -29,7 +29,7 @@ class MainWindow(tk.Frame):
             anchor='s',
             image=self.ui.canvas_for_image.image)
         canvas_size = (self.canvas_width, self.canvas_height)
-        # Creates an invisible image, which is needed to save the created image.
+        # Creates an invisible image, which is needed to save the created image
         self.ui.pil_image = Image.new('RGB', canvas_size, color='white')
         self.ui.draw = ImageDraw.Draw(self.ui.pil_image)
 
@@ -100,6 +100,7 @@ class Menu:
                     self.gui.commands_data.append(self.gui.text)
                     InputProcessing(self.ui, self.gui, self.gui.text)
             errors = self.gui.errors
+            # shows warning message if errors were found in the opened file
             if errors > 0:
                 message = (
                     f'{errors} {"errors" if errors > 1 else "error"} '

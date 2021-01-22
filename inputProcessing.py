@@ -42,7 +42,7 @@ class InputProcessing:
         self.gui.errors += 1
         return text
 
-    # Check the input and selects the command depending on it.
+    # Checks the input and selects the command depending on it.
     def chooseCommand(self):
         if self.text == 'up':
             self.gui.is_up = True
@@ -57,15 +57,19 @@ class InputProcessing:
             elif command == 'move':
                 text = self.text
                 Move(self.ui, self.gui, units)
+            # if entry is "up [units]" or "down [units]"
             elif command == 'up' or command == 'down':
                 raise IndexError()
+            # if undefined command is entered
             else:
                 text = self.undefinedCommandText() + example
+        # if a command is entered without units
         except IndexError:
             if self.text == 'up' or self.text == 'down':
                 text = self.text
             else:
                 text = self.indexErrorText() + example
+        # if units is not a number
         except ValueError:
             text = self.valueErrorText() + example
         self.returnEntry(text)
