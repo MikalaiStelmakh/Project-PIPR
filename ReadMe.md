@@ -43,11 +43,17 @@ To <u>move</u> the turtle use command `move [units]`. By default turtle faces no
 An example of an image obtained entering the following commands:
 
 `move 100`
+
 `turn 90`
+
 `move 100`
+
 `turn 90`
+
 `move 100`
+
 `turn 90`
+
 `move 100`
 
 You can find more examples of the `.txt` files with commands in the `/examples/commands/` directory. Images obtained using these commands are located in the `/examples/imagex/` folder.
