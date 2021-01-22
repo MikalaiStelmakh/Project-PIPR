@@ -8,10 +8,8 @@ class UI(tk.Frame):
         self.canvas.pack()
         self.menu = tk.Menu(self.master)
         self.fileMenu = tk.Menu(self.menu, tearoff=0)
-        self.helpMenu = tk.Menu(self.menu, tearoff=0)
         self.master.config(menu=self.menu)
         self.menu.add_cascade(label='File', menu=self.fileMenu)
-        self.menu.add_cascade(label='Help', menu=self.helpMenu)
         self.canvas_for_image = tk.Canvas(master, bg='white')
         self.canvas_for_image.place(
             relx=0.5,
@@ -24,7 +22,7 @@ class UI(tk.Frame):
         self.label_frame.place(rely=0.9, relwidth=1, relheight=0.07)
         self.label = tk.Label(
             self.label_frame,
-            text='Hello\n',
+            text='Welcome to Imagine logo!\n',
             fg='black',
             font=("Modern", 10),
             justify='left',
