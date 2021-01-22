@@ -20,19 +20,19 @@ To <u>move</u> the turtle use command `move [units]`. By default turtle faces no
 
    Returns everything to its original position. **Attention!** Make sure all changes are saved before creating a new file.
 
-   **2.2 Open**
+   **1.2 Open**
 
    Opens a text file with commands and executes them. **Attention!** All undefined commands will be skipped.
 
-   **2.3 Save image**
+   **1.3 Save image**
 
    Opens a window for choosing a direction to save the image obtained while moving the turtle.
 
-   **2.4 Save txt**
+   **1.4 Save txt**
 
    Opens a window for choosing a direction to save commands in `.txt` format obtained while moving the turtle.
 
-   **2.5 Exit**
+   **1.5 Exit**
 
    Closes the application. **Attention!** Make sure all changes are saved before closing the application.
 
