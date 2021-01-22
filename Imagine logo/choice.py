@@ -172,13 +172,13 @@ class Move:
                 x, y, x1, y1, new_x, new_y = rightBorderCrossed(
                     self.gui.image_x, self.gui.image_y,
                     self.gui.canvas_height, self.gui.canvas_width,
-                    self.move_y, self.gui.simple_angle
+                    self.move_y, angle
                 )
             elif self.move_x < 0:
                 x, y, x1, y1, new_x, new_y = leftBorderCrossed(
                     self.gui.image_x, self.gui.image_y,
                     self.gui.canvas_height, self.gui.canvas_width,
-                    self.move_y, self.gui.simple_angle
+                    self.move_y, angle
                 )
             else:
                 x, y, x1, y1, new_x, new_y = topOrBotBorderCrossed(
