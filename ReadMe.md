@@ -36,19 +36,35 @@ To <u>move</u> the turtle use command `move [units]`. By default turtle faces no
 
    Closes the application. **Attention!** Make sure all changes are saved before closing the application.
 
-2. **Help**
+### Example
 
-   **2.1 User guide**
+<img src="C:\Users\mikal\AppData\Roaming\Typora\typora-user-images\image-20210122162932645.png" alt="image-20210122162932645" style="zoom: 33%;" />
 
-   Shows user guide.
+An example of an image obtained entering the following commands:
 
-   **2.2 For developers**
+`move 100
+turn 90
+move 100
+turn 90
+move 100
+turn 90
+move 100`
 
-   Shows technical documentation.
+You can find more examples of the `.txt` files with commands in the `/examples/commands/` directory. Images obtained using these commands are located in the `/examples/imagex/` folder.
 
 
 
-# Technical documentation
+# Documentation
+
+#### Technologies used:
+
+Tkinter - package used to create program gui
+
+- Pillow - library for handling images
+- Math - module that provides access to the mathematical functions.
+- Random - module that implements pseudo-random number.
+
+### Modules
 
 ### <a name='gui'>`gui`</a>
 
@@ -72,4 +88,8 @@ Initialized when the `turn` command is given. Rotates the image, sets the anchor
 
 ##### `Move` class:
 
-Initialized when the `move` command is given. Sets new coordinates of the image, moves it and draws a line if the turtle is down. Creates  a `CrossedBorder` class (from `bordersCrossing.py`) object if canvas border is crossed while moving the image.
+Initialized when the `move` command is given. Sets new coordinates of the image, moves it and draws a line if the turtle is down. Calls functions from `borders.py` module if canvas border is crossed while moving the image.
+
+### Modules import system
+
+![image-20210122165726109](C:\Users\mikal\AppData\Roaming\Typora\typora-user-images\image-20210122165726109.png)
