@@ -19,7 +19,7 @@ class MainWindow(tk.Frame):
     # Creates an image at its original location.
     def createImage(self):
         size = (self.image_height, self.image_width)
-        self.ui.image = Image.open('turtle.png')
+        self.ui.image = Image.open('docs/turtle.png')
         self.ui.canvas_for_image.image = ImageTk.PhotoImage(
             self.ui.image.rotate(0, expand=True).resize(size),
             Image.ANTIALIAS)
