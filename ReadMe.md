@@ -38,17 +38,17 @@ To <u>move</u> the turtle use command `move [units]`. By default turtle faces no
 
 ### Example
 
-<img src="C:\Users\mikal\AppData\Roaming\Typora\typora-user-images\image-20210122162932645.png" alt="image-20210122162932645" style="zoom: 33%;" />
+<img src="docs/example.jpg" style="zoom: 33%;" />
 
 An example of an image obtained entering the following commands:
 
-`move 100
-turn 90
-move 100
-turn 90
-move 100
-turn 90
-move 100`
+`move 100`
+`turn 90`
+`move 100`
+`turn 90`
+`move 100`
+`turn 90`
+`move 100`
 
 You can find more examples of the `.txt` files with commands in the `/examples/commands/` directory. Images obtained using these commands are located in the `/examples/imagex/` folder.
 
@@ -92,4 +92,4 @@ Initialized when the `move` command is given. Sets new coordinates of the image,
 
 ### Modules import system
 
-![image-20210122165726109](C:\Users\mikal\AppData\Roaming\Typora\typora-user-images\image-20210122165726109.png)
+![](docs/imports.jpg)
